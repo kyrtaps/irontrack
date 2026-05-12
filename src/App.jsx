@@ -728,10 +728,10 @@ export default function App() {
           return(
             <div key={i}>
               <div
-                className={`set-row${done?" done":""}${isActive&&!done?" active-row":""}`}
+                className={`set-row${done?" logged":""}${isActive&&!done?" active-row":""}`}
                 onClick={()=>setActiveSet(i)}
               >
-                <span className={`sr-num${done?" done":""}`}>{i+1}</span>
+                <span className={`sr-num${done?" logged":""}`}>{i+1}</span>
                 {done ? (
                   <span style={{flex:1,textAlign:"center",fontSize:14,fontWeight:600,color:"rgba(255,255,255,.82)",letterSpacing:.2,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>
                     {s.weight||"BW"}{!isBW(s.weight)?" kg":""} · {s.reps} reps · RIR {s.rir}
