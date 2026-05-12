@@ -68,6 +68,20 @@ async function clearDraft() {
 
 // ─── Seed history ─────────────────────────────────────────────────────────────
 const SEED_SESSIONS = [
+  { id:"imp_20250510", type:"push", date:"2025-05-10T09:00:00.000Z", exercises:[
+    { id:"db_bench", name:"Flat DB Bench Press", sets:[
+      {weight:"28",reps:"6",rir:1},{weight:"28",reps:"5",rir:1},{weight:"28",reps:"5",rir:1},{weight:"28",reps:"5",rir:1}]},
+    { id:"incline_db_press", name:"Incline DB Press (45°)", sets:[
+      {weight:"26",reps:"5",rir:1},{weight:"26",reps:"5",rir:1},{weight:"26",reps:"4",rir:1}]},
+    { id:"db_ohp", name:"Overhead DB Shoulder Press", sets:[
+      {weight:"22",reps:"6",rir:1},{weight:"22",reps:"6",rir:1},{weight:"22",reps:"6",rir:1}]},
+  ]},
+  { id:"imp_20250507", type:"legs", date:"2025-05-07T09:00:00.000Z", exercises:[
+    { id:"incline_leg_press", name:"Incline Leg Press (45°)", sets:[
+      {weight:"180",reps:"6",rir:1},{weight:"180",reps:"6",rir:1},{weight:"180",reps:"6",rir:1},{weight:"180",reps:"6",rir:1}]},
+    { id:"rdl", name:"Romanian Deadlift (Barbell)", sets:[
+      {weight:"50",reps:"6",rir:1},{weight:"50",reps:"6",rir:1},{weight:"50",reps:"6",rir:1},{weight:"50",reps:"6",rir:1}]},
+  ]},
   { id:"imp_20250505", type:"push", date:"2025-05-05T09:00:00.000Z", exercises:[
     { id:"db_bench", name:"Flat DB Bench Press", sets:[
       {weight:"28",reps:"5",rir:1},{weight:"28",reps:"5",rir:1},{weight:"28",reps:"5",rir:1}]},
