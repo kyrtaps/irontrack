@@ -429,7 +429,18 @@ function LoginScreen() {
       if (isNew) await createUserWithEmailAndPassword(auth, email, password);
       else       await signInWithEmailAndPassword(auth, email, password);
     } catch (err) {
-      setError(err.message.replace("Firebase: ", "").replace(/ \(auth\/.*\)\.?/, ""));
+      const code = err.code || "";
+      const msg = {
+        "auth/operation-not-allowed":   "Email sign-in is not enabled. Contact the app owner.",
+        "auth/email-already-in-use":    "An account with this email already exists.",
+        "auth/invalid-email":           "Invalid email address.",
+        "auth/weak-password":           "Password must be at least 6 characters.",
+        "auth/user-not-found":          "No account found with this email.",
+        "auth/wrong-password":          "Incorrect password.",
+        "auth/too-many-requests":       "Too many attempts. Try again later.",
+        "auth/unauthorized-domain":     "This domain is not authorised in Firebase. Add it under Authentication → Settings → Authorized domains.",
+      }[code] || err.message.replace("Firebase: ", "").replace(/ \(auth\/.*\)\.?/, "") || "Something went wrong.";
+      setError(msg);
     }
     setLoading(false);
   }
