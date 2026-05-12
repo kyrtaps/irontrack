@@ -154,55 +154,55 @@ const SEED_SESSIONS = [
 // ─── Exercise library ─────────────────────────────────────────────────────────
 const EXERCISES = {
   pull: [
-    { id:"pull_up",          name:"Pull-ups",               muscle:"Lats",        cues:["Dead hang, arms fully extended","Pull elbows down to hips, chest to bar","Slow 3-second descent"] },
-    { id:"barbell_row",      name:"Barbell Row",             muscle:"Mid Back",    cues:["Hinge ~45°, flat back throughout","Row bar to lower chest","Squeeze shoulder blades at top"] },
-    { id:"cable_row",        name:"Seated Cable Row",        muscle:"Mid Back",    cues:["Sit tall, slight back lean","Pull handle to navel","Hold 1s squeeze, slow return"] },
-    { id:"lat_pulldown",     name:"Lat Pulldown",            muscle:"Lats",        cues:["Slight back lean, chest up","Pull bar to upper chest","Feel full lat stretch at top"] },
-    { id:"face_pull",        name:"Face Pull",               muscle:"Rear Delt",   cues:["Cable at eye height, rope attachment","Pull to face, elbows flared high","Pause and squeeze rear delts"] },
-    { id:"hammer_curl",      name:"Hammer Curl",             muscle:"Biceps",      cues:["Neutral grip, thumbs pointing up","Keep elbows pinned to sides","Full ROM top to bottom"] },
-    { id:"ez_bar_curl",      name:"EZ Bar Curl",             muscle:"Biceps",      cues:["Shoulder-width grip on angled bar","Curl to chin, elbows stay fixed","3-second eccentric on the way down"] },
-    { id:"incline_curl",     name:"Incline DB Curl",         muscle:"Biceps",      cues:["Bench at 45–60°, arms hang freely","Curl without swinging torso","Full stretch at the bottom"] },
-    { id:"chest_supported_db_row", name:"Chest Supported DB Row", muscle:"Mid Back", cues:["Chest on incline bench, feet on floor","Row DBs to hip line","Retract scapula before you pull"] },
-    { id:"single_arm_row",   name:"Single-Arm DB Row",       muscle:"Lats",        cues:["Knee and hand on bench for support","Row DB to hip, elbow close to body","Full stretch at the bottom"] },
-    { id:"cable_curl",       name:"Cable Curl",              muscle:"Biceps",      cues:["Low pulley, supinated grip","Curl keeping upper arm vertical","Peak squeeze at top"] },
-    { id:"neutral_pulldown", name:"Neutral-Grip Pulldown",   muscle:"Lats",        cues:["Palms face each other on bar","Pull to chin, elbows track straight down","Control the return"] },
-    { id:"reverse_curl",     name:"Reverse Curl",            muscle:"Brachialis",  cues:["Overhand (pronated) grip","Curl without elbow flare","Great for forearm development"] },
-    { id:"meadows_row",      name:"Meadows Row",             muscle:"Mid Back",    cues:["Landmine setup, perpendicular stance","Row to hip with full range of motion","Slight torso rotation OK"] },
-    { id:"cable_row_seated", name:"Standing Cable Row",      muscle:"Mid Back",    cues:["Stand with slight knee bend","Row to navel, brace core","Squeeze mid-back at top"] },
+    { id:"pull_up",          priority:"primary",   name:"Pull-ups",               muscle:"Lats",        cues:["Dead hang, arms fully extended","Pull elbows down to hips, chest to bar","Slow 3-second descent"] },
+    { id:"barbell_row",      priority:"primary",   name:"Barbell Row",             muscle:"Mid Back",    cues:["Hinge ~45°, flat back throughout","Row bar to lower chest","Squeeze shoulder blades at top"] },
+    { id:"cable_row",        priority:"secondary", name:"Seated Cable Row",        muscle:"Mid Back",    cues:["Sit tall, slight back lean","Pull handle to navel","Hold 1s squeeze, slow return"] },
+    { id:"lat_pulldown",     priority:"secondary", name:"Lat Pulldown",            muscle:"Lats",        cues:["Slight back lean, chest up","Pull bar to upper chest","Feel full lat stretch at top"] },
+    { id:"chest_supported_db_row", priority:"secondary", name:"Chest Supported DB Row", muscle:"Mid Back", cues:["Chest on incline bench, feet on floor","Row DBs to hip line","Retract scapula before you pull"] },
+    { id:"single_arm_row",   priority:"secondary", name:"Single-Arm DB Row",       muscle:"Lats",        cues:["Knee and hand on bench for support","Row DB to hip, elbow close to body","Full stretch at the bottom"] },
+    { id:"neutral_pulldown", priority:"secondary", name:"Neutral-Grip Pulldown",   muscle:"Lats",        cues:["Palms face each other on bar","Pull to chin, elbows track straight down","Control the return"] },
+    { id:"meadows_row",      priority:"secondary", name:"Meadows Row",             muscle:"Mid Back",    cues:["Landmine setup, perpendicular stance","Row to hip with full range of motion","Slight torso rotation OK"] },
+    { id:"cable_row_seated", priority:"accessory", name:"Standing Cable Row",      muscle:"Mid Back",    cues:["Stand with slight knee bend","Row to navel, brace core","Squeeze mid-back at top"] },
+    { id:"face_pull",        priority:"isolation", name:"Face Pull",               muscle:"Rear Delt",   cues:["Cable at eye height, rope attachment","Pull to face, elbows flared high","Pause and squeeze rear delts"] },
+    { id:"hammer_curl",      priority:"isolation", name:"Hammer Curl",             muscle:"Biceps",      cues:["Neutral grip, thumbs pointing up","Keep elbows pinned to sides","Full ROM top to bottom"] },
+    { id:"ez_bar_curl",      priority:"isolation", name:"EZ Bar Curl",             muscle:"Biceps",      cues:["Shoulder-width grip on angled bar","Curl to chin, elbows stay fixed","3-second eccentric on the way down"] },
+    { id:"incline_curl",     priority:"isolation", name:"Incline DB Curl",         muscle:"Biceps",      cues:["Bench at 45–60°, arms hang freely","Curl without swinging torso","Full stretch at the bottom"] },
+    { id:"cable_curl",       priority:"isolation", name:"Cable Curl",              muscle:"Biceps",      cues:["Low pulley, supinated grip","Curl keeping upper arm vertical","Peak squeeze at top"] },
+    { id:"reverse_curl",     priority:"isolation", name:"Reverse Curl",            muscle:"Brachialis",  cues:["Overhand (pronated) grip","Curl without elbow flare","Great for forearm development"] },
   ],
   push: [
-    { id:"bench_press",      name:"Barbell Bench Press",     muscle:"Chest",       cues:["Arch, retract scapula, feet flat on floor","Bar to lower chest, elbows ~75° from torso","Drive through legs, full lockout"] },
-    { id:"incline_db_press", name:"Incline DB Press",        muscle:"Upper Chest", cues:["30–45° incline setting","DBs together at top, deep stretch at bottom","Keep wrists stacked over elbows"] },
-    { id:"ohp",              name:"Overhead Press",          muscle:"Shoulders",   cues:["Bar at collarbone, elbows slightly forward","Press overhead to full lockout","Brace core to protect lower back"] },
-    { id:"cable_fly",        name:"Cable Fly",               muscle:"Chest",       cues:["Cables at chest height","Arc motion with slight elbow bend throughout","Squeeze hard at centre"] },
-    { id:"lateral_raise",    name:"Lateral Raise",           muscle:"Side Delt",   cues:["Slight forward lean, soft elbow bend","Lead with elbows to shoulder height","Slow 3–4s lower — the eccentric matters"] },
-    { id:"tricep_pushdown",  name:"Cable Triceps Pushdown",  muscle:"Triceps",     cues:["Elbows pinned to sides throughout","Push to full lockout at the bottom","Don't let elbows drift forward"] },
-    { id:"skull_crusher",    name:"Skull Crusher",           muscle:"Triceps",     cues:["EZ bar, upper arms vertical","Lower to forehead, elbows stay narrow","Press back to vertical"] },
-    { id:"dip",              name:"Weighted Dip",            muscle:"Chest/Tri",   cues:["Slight forward lean for chest emphasis","Lower until shoulders below elbows","Lock out fully at top"] },
-    { id:"db_ohp",           name:"Seated DB Shoulder Press",muscle:"Shoulders",   cues:["Seat upright, DBs at ear height","Press overhead, slight inward arc","Don't shrug at the top"] },
-    { id:"incline_cable_fly",name:"Incline Cable Fly",       muscle:"Upper Chest", cues:["Low pulleys, use an incline bench","Arc up and together, feel the stretch","Emphasise the stretch at the bottom"] },
-    { id:"overhead_tri",     name:"Overhead Tricep Extension",muscle:"Triceps",    cues:["Elbows point forward, by ears","Lower rope or DB behind head","Extend to full lockout"] },
-    { id:"db_bench",         name:"DB Bench Press",          muscle:"Chest",       cues:["DBs touch at the top","Lower with control, elbows ~60°","Full press — don't hard lock"] },
-    { id:"arnold_press",     name:"Arnold Press",            muscle:"Shoulders",   cues:["Start with palms facing you at chin","Rotate outward as you press up","Reverse the rotation on descent"] },
-    { id:"pec_deck",         name:"Pec Deck",                muscle:"Chest",       cues:["Elbows on pad at chest height","Bring pads together and squeeze hard","3-second eccentric"] },
-    { id:"front_raise",      name:"Front Raise",             muscle:"Front Delt",  cues:["Palms down or neutral grip","Raise to eye level — don't swing","Control the descent slowly"] },
+    { id:"bench_press",      priority:"primary",   name:"Barbell Bench Press",     muscle:"Chest",       cues:["Arch, retract scapula, feet flat on floor","Bar to lower chest, elbows ~75° from torso","Drive through legs, full lockout"] },
+    { id:"ohp",              priority:"primary",   name:"Overhead Press",          muscle:"Shoulders",   cues:["Bar at collarbone, elbows slightly forward","Press overhead to full lockout","Brace core to protect lower back"] },
+    { id:"incline_db_press", priority:"secondary", name:"Incline DB Press",        muscle:"Upper Chest", cues:["30–45° incline setting","DBs together at top, deep stretch at bottom","Keep wrists stacked over elbows"] },
+    { id:"db_bench",         priority:"secondary", name:"DB Bench Press",          muscle:"Chest",       cues:["DBs touch at the top","Lower with control, elbows ~60°","Full press — don't hard lock"] },
+    { id:"dip",              priority:"secondary", name:"Weighted Dip",            muscle:"Chest/Tri",   cues:["Slight forward lean for chest emphasis","Lower until shoulders below elbows","Lock out fully at top"] },
+    { id:"db_ohp",           priority:"accessory", name:"Seated DB Shoulder Press",muscle:"Shoulders",   cues:["Seat upright, DBs at ear height","Press overhead, slight inward arc","Don't shrug at the top"] },
+    { id:"arnold_press",     priority:"accessory", name:"Arnold Press",            muscle:"Shoulders",   cues:["Start with palms facing you at chin","Rotate outward as you press up","Reverse the rotation on descent"] },
+    { id:"cable_fly",        priority:"isolation", name:"Cable Fly",               muscle:"Chest",       cues:["Cables at chest height","Arc motion with slight elbow bend throughout","Squeeze hard at centre"] },
+    { id:"lateral_raise",    priority:"isolation", name:"Lateral Raise",           muscle:"Side Delt",   cues:["Slight forward lean, soft elbow bend","Lead with elbows to shoulder height","Slow 3–4s lower — the eccentric matters"] },
+    { id:"tricep_pushdown",  priority:"isolation", name:"Cable Triceps Pushdown",  muscle:"Triceps",     cues:["Elbows pinned to sides throughout","Push to full lockout at the bottom","Don't let elbows drift forward"] },
+    { id:"skull_crusher",    priority:"isolation", name:"Skull Crusher",           muscle:"Triceps",     cues:["EZ bar, upper arms vertical","Lower to forehead, elbows stay narrow","Press back to vertical"] },
+    { id:"incline_cable_fly",priority:"isolation", name:"Incline Cable Fly",       muscle:"Upper Chest", cues:["Low pulleys, use an incline bench","Arc up and together, feel the stretch","Emphasise the stretch at the bottom"] },
+    { id:"overhead_tri",     priority:"isolation", name:"Overhead Tricep Extension",muscle:"Triceps",    cues:["Elbows point forward, by ears","Lower rope or DB behind head","Extend to full lockout"] },
+    { id:"pec_deck",         priority:"isolation", name:"Pec Deck",                muscle:"Chest",       cues:["Elbows on pad at chest height","Bring pads together and squeeze hard","3-second eccentric"] },
+    { id:"front_raise",      priority:"isolation", name:"Front Raise",             muscle:"Front Delt",  cues:["Palms down or neutral grip","Raise to eye level — don't swing","Control the descent slowly"] },
   ],
   legs: [
-    { id:"squat",            name:"Back Squat",              muscle:"Quads",       cues:["Bar on traps, brace hard before descent","Break at hips and knees simultaneously","Drive knees out, keep chest tall"] },
-    { id:"rdl",              name:"Romanian Deadlift",       muscle:"Hamstrings",  cues:["Hip hinge, soft knees throughout","Bar drags down shins until you feel hamstring stretch","Drive hips forward to stand tall"] },
-    { id:"leg_press",        name:"Leg Press",               muscle:"Quads",       cues:["Feet shoulder-width, mid-plate position","Lower until 90° knee angle","Don't lock out aggressively at top"] },
-    { id:"leg_curl",         name:"Leg Curl Machine",        muscle:"Hamstrings",  cues:["Lie prone, pad just above heels","Curl fully, keep hips pressed down","3-second eccentric on return"] },
-    { id:"bulgarian_split",  name:"Bulgarian Split Squat",   muscle:"Quads",       cues:["Rear foot elevated, torso upright","Front knee tracks over toes","Deep stretch at the bottom — go slow"] },
-    { id:"hip_thrust",       name:"Hip Thrust",              muscle:"Glutes",      cues:["Shoulders on bench, bar padded on hips","Drive hips to full extension","Squeeze glutes hard at the top"] },
-    { id:"hack_squat",       name:"V-Squat / Hack Squat",   muscle:"Quads",       cues:["Feet shoulder-width on the plate","Lower to 90° or below","Push through heels"] },
-    { id:"leg_extension",    name:"Leg Extension",           muscle:"Quads",       cues:["Pad positioned just above ankle","Extend fully and flex quads hard at top","Slow 3-second eccentric"] },
-    { id:"standing_calf",    name:"Standing Calf Raise",     muscle:"Calves",      cues:["Full ROM — deep stretch at the bottom","Pause at top, squeeze calves hard","Slow eccentric is the key"] },
-    { id:"seated_calf",      name:"Seated Calf Raise",       muscle:"Calves",      cues:["Knee bent 90°, pads on quads","Full stretch at the bottom","Soleus focused — great complement to standing"] },
-    { id:"sumo_deadlift",    name:"Sumo Deadlift",           muscle:"Hamstrings/Glutes", cues:["Wide stance, toes out ~45°","Grip inside legs, chest up","Push floor away, lock hips at top"] },
-    { id:"goblet_squat",     name:"Goblet Squat",            muscle:"Quads",       cues:["DB or KB at chest height","Elbows inside knees at the bottom","Great warm-up squat pattern"] },
-    { id:"nordic_curl",      name:"Nordic Curl",             muscle:"Hamstrings",  cues:["Feet anchored, kneel tall","Lower body slowly over 3–5 seconds","Catch with hands if needed at first"] },
-    { id:"rdl_db",           name:"RDL DB",                  muscle:"Hamstrings",  cues:["DBs in front of thighs","Hinge forward until you feel a hamstring stretch","Return by driving hips forward"] },
-    { id:"step_up",          name:"Weighted Step-Up",        muscle:"Glutes",      cues:["Step height roughly knee level","Drive through heel of the top foot","Don't push off the bottom foot"] },
+    { id:"squat",            priority:"primary",   name:"Back Squat",              muscle:"Quads",       cues:["Bar on traps, brace hard before descent","Break at hips and knees simultaneously","Drive knees out, keep chest tall"] },
+    { id:"hack_squat",       priority:"primary",   name:"V-Squat / Hack Squat",   muscle:"Quads",       cues:["Feet shoulder-width on the plate","Lower to 90° or below","Push through heels"] },
+    { id:"rdl",              priority:"secondary", name:"Romanian Deadlift",       muscle:"Hamstrings",  cues:["Hip hinge, soft knees throughout","Bar drags down shins until you feel hamstring stretch","Drive hips forward to stand tall"] },
+    { id:"sumo_deadlift",    priority:"secondary", name:"Sumo Deadlift",           muscle:"Hamstrings/Glutes", cues:["Wide stance, toes out ~45°","Grip inside legs, chest up","Push floor away, lock hips at top"] },
+    { id:"rdl_db",           priority:"secondary", name:"RDL DB",                  muscle:"Hamstrings",  cues:["DBs in front of thighs","Hinge forward until you feel a hamstring stretch","Return by driving hips forward"] },
+    { id:"leg_press",        priority:"accessory", name:"Leg Press",               muscle:"Quads",       cues:["Feet shoulder-width, mid-plate position","Lower until 90° knee angle","Don't lock out aggressively at top"] },
+    { id:"bulgarian_split",  priority:"accessory", name:"Bulgarian Split Squat",   muscle:"Quads",       cues:["Rear foot elevated, torso upright","Front knee tracks over toes","Deep stretch at the bottom — go slow"] },
+    { id:"goblet_squat",     priority:"accessory", name:"Goblet Squat",            muscle:"Quads",       cues:["DB or KB at chest height","Elbows inside knees at the bottom","Great warm-up squat pattern"] },
+    { id:"step_up",          priority:"accessory", name:"Weighted Step-Up",        muscle:"Glutes",      cues:["Step height roughly knee level","Drive through heel of the top foot","Don't push off the bottom foot"] },
+    { id:"leg_curl",         priority:"isolation", name:"Leg Curl Machine",        muscle:"Hamstrings",  cues:["Lie prone, pad just above heels","Curl fully, keep hips pressed down","3-second eccentric on return"] },
+    { id:"hip_thrust",       priority:"isolation", name:"Hip Thrust",              muscle:"Glutes",      cues:["Shoulders on bench, bar padded on hips","Drive hips to full extension","Squeeze glutes hard at the top"] },
+    { id:"leg_extension",    priority:"isolation", name:"Leg Extension",           muscle:"Quads",       cues:["Pad positioned just above ankle","Extend fully and flex quads hard at top","Slow 3-second eccentric"] },
+    { id:"standing_calf",    priority:"isolation", name:"Standing Calf Raise",     muscle:"Calves",      cues:["Full ROM — deep stretch at the bottom","Pause at top, squeeze calves hard","Slow eccentric is the key"] },
+    { id:"seated_calf",      priority:"isolation", name:"Seated Calf Raise",       muscle:"Calves",      cues:["Knee bent 90°, pads on quads","Full stretch at the bottom","Soleus focused — great complement to standing"] },
+    { id:"nordic_curl",      priority:"isolation", name:"Nordic Curl",             muscle:"Hamstrings",  cues:["Feet anchored, kneel tall","Lower body slowly over 3–5 seconds","Catch with hands if needed at first"] },
   ],
 };
 
@@ -320,15 +320,42 @@ function parseRIR(v) {
 function latestOf(sessions,type){
   return [...sessions].filter(s=>s.type===type).sort((a,b)=>new Date(b.date)-new Date(a.date))[0]||null;
 }
-function pickExercises(type, last){
-  const pool=[...EXERCISES[type]];
-  const prev=last[type]||[];
-  pool.sort((a,b)=>{
-    const ai=prev.indexOf(a.id),bi=prev.indexOf(b.id);
-    if(ai===-1&&bi!==-1)return -1;if(ai!==-1&&bi===-1)return 1;
-    return Math.random()-.5;
-  });
-  return pool.slice(0,EX_N);
+function pickExercises(type, last, sessionCount){
+  const pool = EXERCISES[type];
+  const prev = new Set(last[type] || []);
+  const shuffle = arr => [...arr].sort(() => Math.random() - 0.5);
+  // Prefer exercises not seen last session; fall back to stale ones (soft slots)
+  const pickFrom = (candidates, n) => {
+    const fresh = shuffle(candidates.filter(e => !prev.has(e.id)));
+    const stale = shuffle(candidates.filter(e => prev.has(e.id)));
+    return [...fresh, ...stale].slice(0, n);
+  };
+
+  const byPriority = p => pool.filter(e => e.priority === p);
+
+  // Primary: deterministic rotation so it alternates each session of the same type
+  const primaries = byPriority("primary");
+  const primary = primaries[(sessionCount || 0) % primaries.length];
+
+  const chosen = new Set([primary.id]);
+
+  // Secondary: 1 exercise, avoid the primary
+  const secondaryPool = byPriority("secondary").filter(e => !chosen.has(e.id));
+  const [secondary] = pickFrom(secondaryPool, 1);
+  if (secondary) chosen.add(secondary.id);
+
+  // Accessory: 1 exercise; fall back to secondary pool if accessory slot is empty
+  const accessoryPool = byPriority("accessory").filter(e => !chosen.has(e.id));
+  const accessoryFallback = byPriority("secondary").filter(e => !chosen.has(e.id));
+  const [accessory] = pickFrom(accessoryPool.length ? accessoryPool : accessoryFallback, 1);
+  if (accessory) chosen.add(accessory.id);
+
+  // Isolations: fill remaining slots
+  const isoPool = byPriority("isolation").filter(e => !chosen.has(e.id));
+  const isolations = pickFrom(isoPool, EX_N - chosen.size);
+
+  // Return in strict compound-first order
+  return [primary, secondary, accessory, ...isolations].filter(Boolean).slice(0, EX_N);
 }
 function getSuggestion(exId,exName,sessions){
   const sorted=[...sessions].sort((a,b)=>new Date(b.date)-new Date(a.date));
@@ -472,7 +499,8 @@ export default function App() {
   const isDone = s => s.reps!==""&&s.rir!==null;
 
   const startSession = type => {
-    const picked=pickExercises(type,data.lastExercises);
+    const sessionCount = data.sessions.filter(s => s.type === type).length;
+    const picked = pickExercises(type, data.lastExercises, sessionCount);
     setAType(type);setExs(picked);setExIdx(0);setSets({});setActiveSet(0);setScreen("warmup");
   };
 
