@@ -324,8 +324,9 @@ function getSuggestion(exId,exName,sessions){
     const avgRIR=done.reduce((a,ss)=>a+(parseRIR(ss.rir)??2),0)/done.length;
     const top=Math.max(...done.map(ss=>parseFloat(ss.weight)||0));
     let sug=top;
-    if(avgRIR<=1)sug=Math.round((top*1.025)/2.5)*2.5;
-    else if(avgRIR>=3.5)sug=Math.max(0,Math.round((top*0.975)/2.5)*2.5);
+    if(avgRIR>=3)sug=Math.round((top+5)/2.5)*2.5;         // too easy → go heavier
+    else if(avgRIR<=1)sug=Math.round((top+2.5)/2.5)*2.5;  // near failure → small step up
+    // RIR 2 → maintain same weight
     return{weight:sug,prevWeight:top,avgRIR:avgRIR.toFixed(1),bw:false};
   }
   return null;
@@ -727,19 +728,25 @@ export default function App() {
           return(
             <div key={i}>
               <div
-                className={`set-row${done?" done":""}${isActive?" active-row":""}`}
+                className={`set-row${done?" done":""}${isActive&&!done?" active-row":""}`}
                 onClick={()=>setActiveSet(i)}
               >
                 <span className={`sr-num${done?" done":""}`}>{i+1}</span>
-                <span className={`sr-val${!s.weight?" empty":""}`}>{s.weight||"—"}</span>
-                <span className={`sr-val${!s.reps?" empty":""}`}>{s.reps||"—"}</span>
-                <span className="sr-rir">
-                  {s.rir!==null
-                    ? <span className="rir-dot" style={{background:`${rirColors[s.rir]}22`,color:rirColors[s.rir]}}>RIR {s.rir}</span>
-                    : <span className="rir-dot" style={{color:"rgba(255,255,255,.2)"}}>—</span>}
-                </span>
+                {done ? (
+                  <span style={{flex:1,textAlign:"center",fontSize:14,fontWeight:600,color:"rgba(255,255,255,.82)",letterSpacing:.2,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>
+                    {s.weight||"BW"}{!isBW(s.weight)?" kg":""} · {s.reps} reps · RIR {s.rir}
+                  </span>
+                ) : (<>
+                  <span className={`sr-val${!s.weight?" empty":""}`}>{s.weight||"—"}</span>
+                  <span className={`sr-val${!s.reps?" empty":""}`}>{s.reps||"—"}</span>
+                  <span className="sr-rir">
+                    {s.rir!==null
+                      ? <span className="rir-dot" style={{background:`${rirColors[s.rir]}22`,color:rirColors[s.rir]}}>RIR {s.rir}</span>
+                      : <span className="rir-dot" style={{color:"rgba(255,255,255,.2)"}}>—</span>}
+                  </span>
+                </>)}
               </div>
-              {isActive&&(
+              {isActive&&!done&&(
                 <div className="set-editor">
                   <div className="se-inputs">
                     <div className="se-field">
