@@ -1,8 +1,11 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { openDB } from "idb";
+import { onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "firebase/auth";
+import { doc, getDoc, setDoc } from "firebase/firestore";
+import { auth, db } from "./firebase";
 import './App.css';
 
-// ─── IndexedDB ────────────────────────────────────────────────────────────────
+// ─── IndexedDB (drafts + local migration) ────────────────────────────────────
 const DB_NAME  = "irontrack_db";
 const DB_STORE = "data";
 const KEY      = "gymtracker_v4";
@@ -27,28 +30,35 @@ async function getDB() {
   return _db;
 }
 
-async function loadData() {
+async function loadLocalData() {
   try {
-    const db  = await getDB();
-    let   val = await db.get(DB_STORE, KEY);
+    const idb = await getDB();
+    let val = await idb.get(DB_STORE, KEY);
     if (!val) {
-      // one-time migration from localStorage
-      try {
-        const raw = localStorage.getItem(KEY);
-        if (raw) {
-          val = JSON.parse(raw);
-          await db.put(DB_STORE, val, KEY);
-          localStorage.removeItem(KEY);
-        }
-      } catch { /* ignore */ }
+      const raw = localStorage.getItem(KEY);
+      if (raw) { val = JSON.parse(raw); localStorage.removeItem(KEY); }
     }
-    if (!val) return getDefaultData();
-    // merge any seed sessions the user doesn't have yet (keyed by id)
+    return val || null;
+  } catch { return null; }
+}
+
+// ─── Firestore ────────────────────────────────────────────────────────────────
+async function loadData(uid) {
+  try {
+    const ref  = doc(db, "users", uid);
+    const snap = await getDoc(ref);
+    let val = snap.exists() ? snap.data() : null;
+
+    if (!val) {
+      val = (await loadLocalData()) || getDefaultData();
+      await setDoc(ref, val);
+    }
+
     const existingIds = new Set((val.sessions || []).map(s => s.id));
     const missing = SEED_SESSIONS.filter(s => !existingIds.has(s.id));
     if (missing.length) {
       val = { ...val, sessions: [...missing, ...(val.sessions || [])] };
-      await db.put(DB_STORE, val, KEY);
+      await setDoc(ref, val);
     }
     return val;
   } catch {
@@ -56,11 +66,8 @@ async function loadData() {
   }
 }
 
-async function saveData(d) {
-  try {
-    const db = await getDB();
-    await db.put(DB_STORE, d, KEY);
-  } catch { /* ignore */ }
+async function saveData(uid, d) {
+  try { await setDoc(doc(db, "users", uid), d); } catch { /* ignore */ }
 }
 
 const DRAFT_KEY = "gymtracker_draft";
@@ -406,8 +413,48 @@ function Sparkline({points,color,h=60}){
 }
 
 
+// ─── Login screen ─────────────────────────────────────────────────────────────
+function LoginScreen() {
+  const [email,    setEmail]    = useState("");
+  const [password, setPassword] = useState("");
+  const [isNew,    setIsNew]    = useState(false);
+  const [error,    setError]    = useState("");
+  const [loading,  setLoading]  = useState(false);
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+    try {
+      if (isNew) await createUserWithEmailAndPassword(auth, email, password);
+      else       await signInWithEmailAndPassword(auth, email, password);
+    } catch (err) {
+      setError(err.message.replace("Firebase: ", "").replace(/ \(auth\/.*\)\.?/, ""));
+    }
+    setLoading(false);
+  }
+
+  return (
+    <div className="login-wrap">
+      <div className="login-logo">IRONTRACK</div>
+      <form className="login-form" onSubmit={handleSubmit}>
+        <input className="login-input" type="email"    placeholder="Email"    value={email}    onChange={e=>setEmail(e.target.value)}    required />
+        <input className="login-input" type="password" placeholder="Password" value={password} onChange={e=>setPassword(e.target.value)} required />
+        {error && <p className="login-error">{error}</p>}
+        <button className="btn btn-p login-btn" type="submit" disabled={loading}>
+          {loading ? "…" : isNew ? "Create Account" : "Sign In"}
+        </button>
+        <button className="login-switch" type="button" onClick={()=>{setIsNew(!isNew);setError("");}}>
+          {isNew ? "Already have an account? Sign in" : "New here? Create an account"}
+        </button>
+      </form>
+    </div>
+  );
+}
+
 // ─── App ──────────────────────────────────────────────────────────────────────
 export default function App() {
+  const [user,    setUser]    = useState(undefined);
   const [data,    setData]    = useState(null);
   const [dbReady, setDbReady] = useState(false);
   const [screen,  setScreen]  = useState("home");
@@ -423,9 +470,16 @@ export default function App() {
   const [quitConfirm, setQuitConfirm] = useState(false);
   const timer = useRestTimer();
 
-  // Load data + restore any in-progress session draft on mount
+  // Auth state listener
   useEffect(() => {
-    Promise.all([loadData(), loadDraft()]).then(([d, draft]) => {
+    return onAuthStateChanged(auth, u => setUser(u ?? null));
+  }, []);
+
+  // Load data + restore any in-progress session draft when user signs in
+  useEffect(() => {
+    if (!user) return;
+    setDbReady(false);
+    Promise.all([loadData(user.uid), loadDraft()]).then(([d, draft]) => {
       setData(d);
       if (draft) {
         setScreen(draft.screen);
@@ -437,12 +491,12 @@ export default function App() {
       }
       setDbReady(true);
     });
-  }, []);
+  }, [user]);
 
-  // Persist to IndexedDB on every data change
+  // Persist to Firestore on every data change
   useEffect(() => {
-    if (dbReady && data) saveData(data);
-  }, [data, dbReady]);
+    if (dbReady && data && user) saveData(user.uid, data);
+  }, [data, dbReady, user]);
 
   // Save in-progress session draft so it survives the app being killed
   useEffect(() => {
@@ -454,7 +508,9 @@ export default function App() {
     }
   }, [screen, aType, exs, exIdx, sets, activeSet, dbReady]);
 
-  if (!dbReady) return <div className="loading">Loading…</div>;
+  if (user === undefined) return <div className="loading">Loading…</div>;
+  if (!user)              return <LoginScreen />;
+  if (!dbReady)           return <div className="loading">Loading…</div>;
 
   const accent   = aType ? SESSION_COLORS[aType] : "#4f9cf9";
   const curEx    = exs[exIdx];
@@ -554,7 +610,7 @@ export default function App() {
     <div className="app" style={{"--accent":accent}}>
 
     {screen==="home"&&tab==="home"&&(<>
-      <div className="hdr"><div className="logo">IRON<em>TRACK</em></div></div>
+      <div className="hdr"><div className="logo">IRON<em>TRACK</em></div><button className="signout-btn" onClick={()=>signOut(auth)}>Sign out</button></div>
       <div className="sb">
         <div className="streak">
           <div className="streak-n">{streak}</div>
