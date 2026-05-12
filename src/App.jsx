@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { openDB } from "idb";
+import './App.css';
 
 // ─── IndexedDB ────────────────────────────────────────────────────────────────
 const DB_NAME  = "irontrack_db";
@@ -52,6 +53,17 @@ async function saveData(d) {
     const db = await getDB();
     await db.put(DB_STORE, d, KEY);
   } catch { /* ignore */ }
+}
+
+const DRAFT_KEY = "gymtracker_draft";
+async function saveDraft(d) {
+  try { const db = await getDB(); await db.put(DB_STORE, d, DRAFT_KEY); } catch {}
+}
+async function loadDraft() {
+  try { const db = await getDB(); return await db.get(DB_STORE, DRAFT_KEY) ?? null; } catch { return null; }
+}
+async function clearDraft() {
+  try { const db = await getDB(); await db.delete(DB_STORE, DRAFT_KEY); } catch {}
 }
 
 // ─── Seed history ─────────────────────────────────────────────────────────────
@@ -226,27 +238,39 @@ function BodyDiagram({ muscle }) {
 // ─── Rest timer ───────────────────────────────────────────────────────────────
 const REST_SECS = 120;
 function useRestTimer() {
-  const [state, setState] = useState("idle");
-  const [secs,  setSecs]  = useState(REST_SECS);
-  const iv = useRef(null);
+  const [state,   setState] = useState("idle"); // idle | running | done
+  const [secs,    setSecs]  = useState(REST_SECS);
+  const ivRef     = useRef(null);
+  const startedAt = useRef(0);
 
-  const tick = useCallback(() => {
-    setSecs(s => {
-      if (s <= 1) { setState("done"); return 0; }
-      return s - 1;
-    });
+  // Always derive remaining time from wall clock — survives tab backgrounding
+  const recalc = useCallback(() => {
+    const remaining = Math.max(0, REST_SECS - Math.floor((Date.now() - startedAt.current) / 1000));
+    setSecs(remaining);
+    if (remaining === 0) {
+      setState("done");
+      clearInterval(ivRef.current);
+    }
   }, []);
 
-  useEffect(() => { if (state === "done") clearInterval(iv.current); }, [state]);
-  useEffect(() => () => clearInterval(iv.current), []);
+  // Snap to correct time the moment the app comes back from background
+  useEffect(() => {
+    const onVisible = () => { if (state === "running") recalc(); };
+    document.addEventListener("visibilitychange", onVisible);
+    return () => document.removeEventListener("visibilitychange", onVisible);
+  }, [state, recalc]);
+
+  useEffect(() => () => clearInterval(ivRef.current), []);
 
   const toggle = () => {
-    if (state === "idle") {
+    if (state === "idle" || state === "done") {
+      startedAt.current = Date.now();
       setSecs(REST_SECS);
       setState("running");
-      iv.current = setInterval(tick, 1000);
+      clearInterval(ivRef.current);
+      ivRef.current = setInterval(recalc, 500);
     } else {
-      clearInterval(iv.current);
+      clearInterval(ivRef.current);
       setState("idle");
       setSecs(REST_SECS);
     }
@@ -321,6 +345,7 @@ function getHistory(exId,exName,sessions){
 
 // ─── Sparkline ────────────────────────────────────────────────────────────────
 function Sparkline({points,color,h=60}){
+  const gid = useRef(`sg${Math.random().toString(36).slice(2)}`).current;
   if(points.length<2)return<div style={{fontSize:12,color:"rgba(255,255,255,.3)",padding:"10px 0",textAlign:"center"}}>Need 2+ sessions to show chart</div>;
   const W=280,pad=10;
   const vals=points.map(p=>p.weight);
@@ -329,7 +354,6 @@ function Sparkline({points,color,h=60}){
   const ys=points.map(p=>pad+((mx-p.weight)/rng)*(h-pad*2));
   const path=xs.map((x,i)=>`${i===0?"M":"L"}${x.toFixed(1)},${ys[i].toFixed(1)}`).join(" ");
   const area=path+` L${xs[xs.length-1].toFixed(1)},${h} L${xs[0].toFixed(1)},${h} Z`;
-  const gid=`g${color.replace("#","")}`;
   return(
     <svg viewBox={`0 0 ${W} ${h}`} style={{width:"100%",height:h,overflow:"visible"}}>
       <defs><linearGradient id={gid} x1="0" y1="0" x2="0" y2="1">
@@ -348,178 +372,6 @@ function Sparkline({points,color,h=60}){
   );
 }
 
-// ─── CSS ──────────────────────────────────────────────────────────────────────
-const CSS=`
-@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap');
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{--bg:#09090f;--s1:#111118;--s2:#18181f;--border:rgba(255,255,255,.07);--border2:rgba(255,255,255,.13);--text:#eeeef5;--muted:#5a5a70;--muted2:#888899;--danger:#ef4444;--accent:#4f9cf9;--r:12px}
-body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;overscroll-behavior:none;-webkit-tap-highlight-color:transparent}
-.app{max-width:480px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column}
-
-.hdr{padding:20px 20px 12px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
-.logo{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:3px}
-.logo em{opacity:.28;font-style:normal}
-.ib{width:34px;height:34px;border-radius:50%;border:1px solid var(--border);background:var(--s1);color:var(--muted2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;transition:.2s;flex-shrink:0}
-.ib:hover{color:var(--text);border-color:var(--border2)}
-
-.sb{flex:1;overflow-y:auto;padding:0 20px 24px}
-.sb::-webkit-scrollbar{width:2px}
-.sb::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
-
-.bnav{padding:10px 20px 16px;border-top:1px solid var(--border);display:flex;gap:8px;flex-shrink:0}
-.nb{flex:1;padding:9px 4px;border:1px solid var(--border);background:var(--s1);border-radius:10px;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;transition:.2s}
-.nb .ni{font-size:17px}
-.nb.on{background:color-mix(in srgb,var(--accent) 10%,transparent);border-color:color-mix(in srgb,var(--accent) 35%,transparent);color:var(--accent)}
-
-.sl{font-size:10px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;color:var(--muted);margin-bottom:10px;margin-top:20px}
-
-.streak{background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:16px 20px;display:flex;align-items:center;gap:16px;margin-bottom:4px}
-.streak-n{font-family:'Bebas Neue',sans-serif;font-size:50px;line-height:1;color:var(--accent)}
-.streak-i{color:var(--muted2);font-size:13px}
-.streak-i strong{display:block;color:var(--text);font-size:15px;font-weight:600;margin-bottom:2px}
-
-.sc{background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:16px;cursor:pointer;transition:.2s;display:flex;align-items:center;gap:12px;position:relative;overflow:hidden;margin-bottom:8px}
-.sc::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--accent)}
-.sc:hover{background:var(--s2);transform:translateX(2px)}
-.sc-icon{width:44px;height:44px;border-radius:50%;background:color-mix(in srgb,var(--accent) 12%,transparent);border:1px solid color-mix(in srgb,var(--accent) 30%,transparent);display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0}
-.sc-name{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1px}
-.sc-meta{font-size:12px;color:var(--muted2);margin-top:2px}
-
-.ri{background:var(--s1);border:1px solid var(--border);border-radius:10px;padding:11px 14px;margin-bottom:8px}
-.ri-top{display:flex;align-items:center;gap:8px;margin-bottom:4px}
-.rbadge{font-size:10px;font-weight:700;letter-spacing:.5px;padding:3px 8px;border-radius:20px;color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,transparent)}
-.rdate{font-size:12px;color:var(--muted2)}
-.rexs{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-
-.btn{border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;border-radius:var(--r);padding:13px 16px;transition:.2s;display:flex;align-items:center;justify-content:center;gap:8px}
-.btn-p{background:var(--accent);color:#000;flex:1}
-.btn-p:hover{filter:brightness(1.1);transform:translateY(-1px)}
-.btn-g{background:var(--s1);border:1px solid var(--border);color:var(--muted2)}
-.btn-g:hover{color:var(--text);border-color:var(--border2)}
-
-.wu{flex:1;display:flex;flex-direction:column;align-items:center;padding:20px 20px 16px;overflow-y:auto}
-.wu-icon{width:76px;height:76px;border-radius:50%;background:color-mix(in srgb,var(--accent) 12%,transparent);border:2px solid color-mix(in srgb,var(--accent) 40%,transparent);display:flex;align-items:center;justify-content:center;font-size:34px;margin-bottom:14px;animation:pulse 2s ease-in-out infinite}
-@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
-.wu-title{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;margin-bottom:4px}
-.wu-sub{color:var(--muted2);font-size:13px;text-align:center;line-height:1.6;max-width:280px;margin-bottom:12px}
-.wu-tips{background:var(--s1);border:1px solid var(--border);border-radius:10px;padding:10px 14px;width:100%;margin-bottom:14px}
-.wu-tip{font-size:12px;color:var(--muted2);padding:5px 0;border-bottom:1px solid var(--border)}
-.wu-tip:last-child{border-bottom:none}
-.wu-tip::before{content:'✓ ';color:var(--accent)}
-.wu-exlist{width:100%;display:flex;flex-direction:column;gap:5px;margin-bottom:16px}
-.wu-ex{background:var(--s1);border:1px solid var(--border);border-radius:8px;padding:8px 12px;display:flex;align-items:center;gap:10px}
-.wu-exn{font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--muted);width:16px;text-align:center}
-
-.sess-hdr{padding:12px 20px 10px;border-bottom:1px solid rgba(255,255,255,.1);flex-shrink:0;background:#0e0e16}
-.sess-top{display:flex;align-items:center;gap:8px;margin-bottom:7px}
-.exname{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px;text-align:center;line-height:1.1;color:#f0f0ff}
-.exname-row{display:flex;align-items:center;justify-content:center;gap:6px;flex:1}
-.exmuscle{font-size:11px;color:rgba(255,255,255,.45);text-align:center;margin-top:1px}
-.exc{font-size:12px;color:rgba(255,255,255,.4);white-space:nowrap;flex-shrink:0}
-.prog-bar{height:3px;background:var(--border);border-radius:2px}
-.prog-fill{height:100%;border-radius:2px;background:var(--accent);transition:width .4s}
-
-.timer{min-width:58px;height:32px;border-radius:20px;border:1.5px solid var(--border);background:var(--s2);color:var(--muted2);font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:1px;cursor:pointer;transition:.2s;padding:0 8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.timer.running{border-color:var(--accent);color:var(--accent);background:color-mix(in srgb,var(--accent) 10%,transparent)}
-.timer.done{border-color:var(--danger);color:var(--danger);background:color-mix(in srgb,var(--danger) 10%,transparent);animation:blink .6s ease-in-out infinite alternate}
-@keyframes blink{from{opacity:1}to{opacity:.45}}
-
-.sess-body{flex:1;overflow-y:auto;padding:12px 20px;background:#0e0e16}
-.sess-body::-webkit-scrollbar{width:2px}
-.sess-body::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:2px}
-
-.suggest{background:color-mix(in srgb,var(--accent) 10%,#111118);border:1px solid color-mix(in srgb,var(--accent) 30%,transparent);border-radius:10px;padding:10px 14px;margin-bottom:12px;display:flex;align-items:center;gap:12px}
-.sug-w{font-family:'Bebas Neue',sans-serif;font-size:30px;color:var(--accent);line-height:1;flex-shrink:0}
-.sug-w span{font-size:14px}
-.sug-info{font-size:12px;color:var(--muted2);line-height:1.55}
-.sug-info strong{color:var(--text);font-size:13px}
-.sug-tag{font-size:10px;padding:2px 6px;border-radius:12px;margin-left:4px;font-weight:700}
-.up{background:color-mix(in srgb,#22c55e 15%,transparent);color:#22c55e}
-.hold{background:color-mix(in srgb,#f59e0b 15%,transparent);color:#f59e0b}
-.down{background:color-mix(in srgb,#ef4444 15%,transparent);color:#ef4444}
-
-.set-hdr{display:flex;align-items:center;padding:0 8px 6px;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.3)}
-.shc-n{width:32px;flex-shrink:0;text-align:center}
-.shc-kg{flex:1;text-align:center}
-.shc-rp{flex:1;text-align:center}
-.shc-rir{flex:1;text-align:center}
-.set-row{display:flex;align-items:center;background:#111118;border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:0 10px;margin-bottom:4px;height:50px;cursor:pointer;transition:border-color .15s,background .15s;user-select:none;-webkit-user-select:none}
-.set-row:active{background:#16161f}
-.set-row.active-row{border-color:var(--accent);background:#12121e}
-.set-row.done{border-color:color-mix(in srgb,var(--accent) 40%,transparent);cursor:default}
-.sr-num{font-family:'Bebas Neue',sans-serif;font-size:18px;width:32px;flex-shrink:0;text-align:center;color:rgba(255,255,255,.25);line-height:1}
-.sr-num.done{color:var(--accent)}
-.sr-val{flex:1;text-align:center;font-size:15px;font-weight:600;color:rgba(255,255,255,.85)}
-.sr-val.empty{color:rgba(255,255,255,.2);font-weight:400;font-size:13px}
-.sr-rir{flex:1;text-align:center}
-.rir-dot{display:inline-block;padding:2px 8px;border-radius:12px;font-size:12px;font-weight:700}
-.set-editor{background:#16161f;border:1px solid color-mix(in srgb,var(--accent) 40%,transparent);border-radius:12px;padding:12px 12px 10px;margin-bottom:4px;margin-top:-2px}
-.se-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:8px;text-align:center}
-.se-inputs{display:flex;gap:8px;margin-bottom:10px}
-.se-field{flex:1;display:flex;flex-direction:column;gap:4px}
-.se-field label{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,.3);text-align:center}
-.se-input{background:#1c1c28;border:1px solid rgba(255,255,255,.12);border-radius:8px;color:#fff;font-family:'DM Sans',sans-serif;font-size:18px;font-weight:700;height:48px;text-align:center;width:100%;outline:none;box-sizing:border-box;-webkit-appearance:none}
-.se-input:focus{border-color:var(--accent);background:#1e1e2e}
-.se-rir{display:flex;gap:6px}
-.se-rir-lbl{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:6px;text-align:center}
-.srb{flex:1;height:42px;background:#1c1c28;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:rgba(255,255,255,.5);font-size:15px;font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.15s}
-.srb.on{background:color-mix(in srgb,var(--accent) 25%,transparent);border-color:var(--accent);color:var(--accent)}
-.se-done-btn{width:100%;margin-top:8px;height:40px;background:var(--accent);border:none;border-radius:8px;color:#000;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer}
-.info-btn{background:none;border:none;cursor:pointer;color:rgba(255,255,255,.4);font-size:14px;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:.2s;padding:0;flex-shrink:0}
-.info-btn:hover{color:var(--accent)}
-
-.rir-leg{font-size:11px;color:var(--muted);padding:8px 0 2px;border-top:1px solid var(--border);margin-top:2px}
-.rir-leg strong{color:var(--muted2)}
-
-.sess-foot{padding:12px 20px;border-top:1px solid rgba(255,255,255,.08);display:flex;gap:8px;flex-shrink:0;background:#0e0e16}
-
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:200;display:flex;align-items:flex-end;justify-content:center}
-.modal{background:var(--s1);border:1px solid var(--border2);border-radius:20px 20px 0 0;padding:20px;width:100%;max-width:480px;max-height:82vh;overflow-y:auto}
-.modal-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px}
-.modal-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px}
-.modal-muscle{font-size:12px;color:var(--muted2);margin-top:2px}
-.modal-body{display:flex;gap:16px;align-items:flex-start}
-.modal-cues{flex:1}
-.modal-cue{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;color:var(--muted2);line-height:1.5}
-.modal-cue:last-child{border-bottom:none}
-.modal-cue-n{font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--accent);width:16px;flex-shrink:0}
-
-.done{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;text-align:center}
-.done-icon{font-size:56px;margin-bottom:14px;animation:pop .4s cubic-bezier(.175,.885,.32,1.275) both}
-@keyframes pop{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
-.done-title{font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:2px;margin-bottom:6px}
-.done-sub{color:var(--muted2);margin-bottom:20px;line-height:1.6;font-size:14px}
-.done-stats{width:100%;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:20px}
-.dstat{background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:12px 6px;text-align:center}
-.dstat-n{font-family:'Bebas Neue',sans-serif;font-size:26px;color:var(--accent)}
-.dstat-l{font-size:11px;color:var(--muted2);margin-top:2px}
-
-.hi{background:var(--s1);border:1px solid var(--border);border-radius:var(--r);margin-bottom:9px;overflow:hidden}
-.hi-hdr{padding:11px 14px;display:flex;align-items:center;gap:10px;cursor:pointer}
-.hi-hdr:hover{background:var(--s2)}
-.hbadge{font-size:10px;font-weight:700;letter-spacing:.5px;padding:3px 9px;border-radius:20px;color:var(--accent);background:color-mix(in srgb,var(--accent) 15%,transparent)}
-.hdate{font-size:13px;color:var(--muted2);flex:1}
-.hbody{border-top:1px solid var(--border);padding:8px 14px}
-.hex{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--border)}
-.hex:last-child{border-bottom:none}
-.hex-name{font-size:13px;flex:1}
-.hex-meta{font-size:12px;color:var(--muted2)}
-.cbtn{font-size:11px;color:var(--accent);background:none;border:none;cursor:pointer;padding:2px 6px;font-family:'DM Sans',sans-serif}
-.cwrap{background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:10px;margin-top:6px}
-.ctitle{font-size:10px;font-weight:700;letter-spacing:1px;color:var(--muted2);margin-bottom:6px;text-transform:uppercase}
-
-.pec{background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:10px}
-.pec-name{font-size:15px;font-weight:600;margin-bottom:2px}
-.pec-stats{display:flex;gap:8px;margin-bottom:10px}
-.ps{background:var(--s2);border-radius:8px;padding:8px;flex:1;text-align:center}
-.ps-n{font-family:'Bebas Neue',sans-serif;font-size:21px;color:var(--accent)}
-.ps-l{font-size:10px;color:var(--muted2)}
-
-.empty{text-align:center;padding:48px 20px;color:var(--muted);font-size:14px}
-.empty-icon{font-size:40px;margin-bottom:12px}
-
-.loading{min-height:100vh;display:flex;align-items:center;justify-content:center;background:#09090f;color:#4f9cf9;font-family:'DM Sans',sans-serif;font-size:15px;letter-spacing:1px}
-`;
 
 // ─── App ──────────────────────────────────────────────────────────────────────
 export default function App() {
@@ -535,17 +387,39 @@ export default function App() {
   const [chartKey,setChartKey]= useState(null);
   const [instrEx, setInstrEx] = useState(null);
   const [activeSet, setActiveSet] = useState(0);
+  const [quitConfirm, setQuitConfirm] = useState(false);
   const timer = useRestTimer();
 
-  // Load from IndexedDB on mount
+  // Load data + restore any in-progress session draft on mount
   useEffect(() => {
-    loadData().then(d => { setData(d); setDbReady(true); });
+    Promise.all([loadData(), loadDraft()]).then(([d, draft]) => {
+      setData(d);
+      if (draft) {
+        setScreen(draft.screen);
+        setAType(draft.aType);
+        setExs(draft.exs);
+        setExIdx(draft.exIdx);
+        setSets(draft.sets);
+        setActiveSet(draft.activeSet ?? 0);
+      }
+      setDbReady(true);
+    });
   }, []);
 
   // Persist to IndexedDB on every data change
   useEffect(() => {
     if (dbReady && data) saveData(data);
   }, [data, dbReady]);
+
+  // Save in-progress session draft so it survives the app being killed
+  useEffect(() => {
+    if (!dbReady) return;
+    if (screen === "session" || screen === "warmup") {
+      saveDraft({ screen, aType, exs, exIdx, sets, activeSet });
+    } else {
+      clearDraft();
+    }
+  }, [screen, aType, exs, exIdx, sets, activeSet, dbReady]);
 
   if (!dbReady) return <div className="loading">Loading…</div>;
 
@@ -564,7 +438,7 @@ export default function App() {
       if(thisWeight!==""&&next<updated.length&&updated[next].weight===""){
         const rir=Number(v);
         const nextW = rir>=3
-          ? String(Math.round((parseFloat(thisWeight)+2.5)*4)/4)
+          ? String(Math.round((parseFloat(thisWeight)+2.5)/2.5)*2.5)
           : thisWeight;
         updated[next]={...updated[next],weight:nextW};
       }
@@ -572,16 +446,11 @@ export default function App() {
     return{...prev,[curEx.id]:updated};
   });
 
-  const logSetAndAdvance = (si) => {
-    const s = (sets[curEx.id]||[])[si]||{};
-    if(s.reps!==""&&s.rir!==null&&si+1<SETS_N) setActiveSet(si+1);
-  };
-
   const isDone = s => s.reps!==""&&s.rir!==null;
 
   const startSession = type => {
     const picked=pickExercises(type,data.lastExercises);
-    setAType(type);setExs(picked);setExIdx(0);setSets({});setScreen("warmup");
+    setAType(type);setExs(picked);setExIdx(0);setSets({});setActiveSet(0);setScreen("warmup");
   };
 
   const nextEx = () => { if(exIdx<exs.length-1){setExIdx(exIdx+1);setActiveSet(0);} else finish(); };
@@ -591,6 +460,7 @@ export default function App() {
       exercises:exs.map(ex=>({id:ex.id,name:ex.name,sets:sets[ex.id]||[]}))};
     setData(prev=>({...prev,sessions:[...prev.sessions,session],
       lastExercises:{...prev.lastExercises,[aType]:exs.map(e=>e.id)}}));
+    clearDraft();
     setScreen("done");
   };
 
@@ -627,9 +497,6 @@ export default function App() {
   const fmtL = d => new Date(d).toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"short"});
 
   return(<>
-    <style>{CSS}</style>
-    <style>{`:root{--accent:${accent}}`}</style>
-
     {instrEx&&(
       <div className="overlay" onClick={()=>setInstrEx(null)}>
         <div className="modal" onClick={e=>e.stopPropagation()}>
@@ -651,7 +518,7 @@ export default function App() {
       </div>
     )}
 
-    <div className="app">
+    <div className="app" style={{"--accent":accent}}>
 
     {screen==="home"&&tab==="home"&&(<>
       <div className="hdr"><div className="logo">IRON<em>TRACK</em></div></div>
@@ -774,7 +641,7 @@ export default function App() {
     {screen==="warmup"&&(<>
       <div className="hdr">
         <div className="logo" style={{color:accent}}>{SESSION_LABELS[aType]} <em>DAY</em></div>
-        <button className="ib" onClick={()=>setScreen("home")}>✕</button>
+        <button className="ib" onClick={()=>{clearDraft();setScreen("home")}}>✕</button>
       </div>
       <div className="wu">
         <div className="wu-icon">🔥</div>
@@ -798,14 +665,23 @@ export default function App() {
     </>)}
 
     {screen==="session"&&curEx&&(<>
-      <div className="sess-hdr">
+      <div className="sess-hdr" style={{position:"relative"}}>
+        {quitConfirm&&(
+          <div className="quit-banner">
+            <span className="quit-msg">Quit and discard session?</span>
+            <button className="quit-cancel" onClick={()=>setQuitConfirm(false)}>Keep</button>
+            <button className="quit-confirm" onClick={()=>{clearDraft();setScreen("home");setQuitConfirm(false);}}>Quit</button>
+          </div>
+        )}
         <div className="sess-top">
-          <button className="ib" onClick={()=>{if(window.confirm("Quit session?"))setScreen("home")}}>✕</button>
-          <div className="exname-row">
-            <div className="exname">{curEx.name}</div>
+          <button className="ib" onClick={()=>setQuitConfirm(true)}>✕</button>
+          <div className="exname-col">
+            <div className="exname-text">
+              <div className="exname">{curEx.name}</div>
+              <div className="exmuscle">{curEx.muscle}</div>
+            </div>
             <button className="info-btn" onClick={()=>setInstrEx(curEx)}>ℹ</button>
           </div>
-          <div className="exmuscle">{curEx.muscle}</div>
           <div style={{display:"flex",alignItems:"center",gap:6}}>
             <span className="exc">{exIdx+1}/{exs.length}</span>
             <button className={`timer ${timer.state}`} onClick={timer.toggle}
@@ -814,7 +690,7 @@ export default function App() {
             </button>
           </div>
         </div>
-        <div className="prog-bar"><div className="prog-fill" style={{width:`${(exIdx/exs.length)*100}%`}}/></div>
+        <div className="prog-bar"><div className="prog-fill" style={{width:`${((exIdx+1)/exs.length)*100}%`}}/></div>
       </div>
 
       <div className="sess-body">
@@ -846,13 +722,13 @@ export default function App() {
         </div>
         {curSets.map((s,i)=>{
           const done=isDone(s);
-          const isActive=activeSet===i&&!done;
+          const isActive=activeSet===i;
           const rirColors=["#ef4444","#f97316","#eab308","#22c55e"];
           return(
             <div key={i}>
               <div
                 className={`set-row${done?" done":""}${isActive?" active-row":""}`}
-                onClick={()=>{ if(!done) setActiveSet(i); }}
+                onClick={()=>setActiveSet(i)}
               >
                 <span className={`sr-num${done?" done":""}`}>{i+1}</span>
                 <span className={`sr-val${!s.weight?" empty":""}`}>{s.weight||"—"}</span>
@@ -899,7 +775,8 @@ export default function App() {
                         style={s.rir===r?{background:`${rirColors[r]}22`,borderColor:rirColors[r],color:rirColors[r]}:{}}
                         onClick={()=>{
                           upd(i,"rir",r);
-                          if(s.reps!=="") setTimeout(()=>logSetAndAdvance(i),80);
+                          navigator.vibrate?.(30);
+                          if(s.reps!=="") setTimeout(()=>{ if(i+1<SETS_N) setActiveSet(i+1); },80);
                         }}
                       >{lbl}</button>
                     ))}

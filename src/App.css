@@ -1,0 +1,381 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap');
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --bg:#09090f;--s1:#111118;--s2:#18181f;
+  --border:rgba(255,255,255,.07);--border2:rgba(255,255,255,.13);
+  --text:#eeeef5;--muted:#5a5a70;--muted2:#888899;
+  --danger:#ef4444;--accent:#4f9cf9;--r:12px;
+  --sat:env(safe-area-inset-top,0px);
+  --sab:env(safe-area-inset-bottom,0px);
+}
+
+html{height:100%}
+
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'DM Sans',sans-serif;
+  min-height:100vh;
+  overscroll-behavior:none;
+  -webkit-tap-highlight-color:transparent;
+  -webkit-text-size-adjust:100%;
+  text-size-adjust:100%;
+}
+
+/* Prevent double-tap zoom on all interactive elements */
+button,a,[role="button"]{touch-action:manipulation}
+
+.app{
+  max-width:480px;
+  margin:0 auto;
+  min-height:100vh;
+  min-height:100dvh;
+  display:flex;
+  flex-direction:column;
+  /* Push content below notch when status bar is translucent */
+  padding-top:var(--sat);
+}
+
+/* ── Header ─────────────────────────────────────────────────────────────────── */
+.hdr{padding:16px 20px 12px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:3px}
+.logo em{opacity:.28;font-style:normal}
+.ib{
+  width:36px;height:36px;border-radius:50%;
+  border:1px solid var(--border);background:var(--s1);
+  color:var(--muted2);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;transition:.15s;flex-shrink:0;
+}
+.ib:active{color:var(--text);border-color:var(--border2);background:var(--s2)}
+
+/* ── Scrollable body ────────────────────────────────────────────────────────── */
+.sb{
+  flex:1;overflow-y:auto;
+  padding:0 20px 24px;
+  -webkit-overflow-scrolling:touch;
+}
+.sb::-webkit-scrollbar{width:2px}
+.sb::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+
+/* ── Bottom nav ─────────────────────────────────────────────────────────────── */
+.bnav{
+  padding:10px 20px;
+  /* Extra space so tabs clear the home indicator */
+  padding-bottom:calc(12px + var(--sab));
+  border-top:1px solid var(--border);
+  display:flex;gap:8px;flex-shrink:0;
+  background:var(--bg);
+}
+.nb{
+  flex:1;padding:9px 4px;
+  border:1px solid var(--border);background:var(--s1);
+  border-radius:10px;color:var(--muted);
+  font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;
+  cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;
+  transition:.15s;
+}
+.nb .ni{font-size:17px}
+.nb.on{
+  background:color-mix(in srgb,var(--accent) 10%,transparent);
+  border-color:color-mix(in srgb,var(--accent) 35%,transparent);
+  color:var(--accent);
+}
+.nb:active{background:var(--s2)}
+
+/* ── Section label ──────────────────────────────────────────────────────────── */
+.sl{font-size:10px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;color:var(--muted);margin-bottom:10px;margin-top:20px}
+
+/* ── Streak card ────────────────────────────────────────────────────────────── */
+.streak{background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:16px 20px;display:flex;align-items:center;gap:16px;margin-bottom:4px}
+.streak-n{font-family:'Bebas Neue',sans-serif;font-size:50px;line-height:1;color:var(--accent)}
+.streak-i{color:var(--muted2);font-size:13px}
+.streak-i strong{display:block;color:var(--text);font-size:15px;font-weight:600;margin-bottom:2px}
+
+/* ── Session cards ──────────────────────────────────────────────────────────── */
+.sc{
+  background:var(--s1);border:1px solid var(--border);border-radius:var(--r);
+  padding:16px;cursor:pointer;transition:.15s;
+  display:flex;align-items:center;gap:12px;
+  position:relative;overflow:hidden;margin-bottom:8px;
+}
+.sc::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--accent)}
+.sc:active{background:var(--s2)}
+.sc-icon{
+  width:44px;height:44px;border-radius:50%;
+  background:color-mix(in srgb,var(--accent) 12%,transparent);
+  border:1px solid color-mix(in srgb,var(--accent) 30%,transparent);
+  display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0;
+}
+.sc-name{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1px}
+.sc-meta{font-size:12px;color:var(--muted2);margin-top:2px}
+
+/* ── Recent session rows ────────────────────────────────────────────────────── */
+.ri{background:var(--s1);border:1px solid var(--border);border-radius:10px;padding:11px 14px;margin-bottom:8px}
+.ri-top{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.rbadge{font-size:10px;font-weight:700;letter-spacing:.5px;padding:3px 8px;border-radius:20px;color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,transparent)}
+.rdate{font-size:12px;color:var(--muted2)}
+.rexs{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* ── Buttons ────────────────────────────────────────────────────────────────── */
+.btn{
+  border:none;cursor:pointer;
+  font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;
+  border-radius:var(--r);padding:14px 16px;
+  transition:.15s;display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.btn-p{background:var(--accent);color:#000;flex:1}
+.btn-p:active{filter:brightness(.9)}
+.btn-g{background:var(--s1);border:1px solid var(--border);color:var(--muted2)}
+.btn-g:active{color:var(--text);border-color:var(--border2)}
+
+/* ── Warmup screen ──────────────────────────────────────────────────────────── */
+.wu{flex:1;display:flex;flex-direction:column;align-items:center;padding:20px 20px 16px;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.wu-icon{
+  width:76px;height:76px;border-radius:50%;
+  background:color-mix(in srgb,var(--accent) 12%,transparent);
+  border:2px solid color-mix(in srgb,var(--accent) 40%,transparent);
+  display:flex;align-items:center;justify-content:center;
+  font-size:34px;margin-bottom:14px;
+  animation:pulse 2s ease-in-out infinite;
+}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+.wu-title{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;margin-bottom:4px}
+.wu-sub{color:var(--muted2);font-size:13px;text-align:center;line-height:1.6;max-width:280px;margin-bottom:12px}
+.wu-exlist{width:100%;display:flex;flex-direction:column;gap:5px;margin-bottom:16px}
+.wu-ex{background:var(--s1);border:1px solid var(--border);border-radius:8px;padding:8px 12px;display:flex;align-items:center;gap:10px}
+.wu-exn{font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--muted);width:16px;text-align:center}
+
+/* ── Session header ─────────────────────────────────────────────────────────── */
+.sess-hdr{
+  padding:10px 16px 8px;
+  border-bottom:1px solid rgba(255,255,255,.1);
+  flex-shrink:0;background:#0e0e16;
+}
+/* Row with: ✕ | [name+muscle centred] | counter+timer */
+.sess-top{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+/* Centre column — stacks name and muscle vertically */
+.exname-col{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;min-width:0}
+.exname-text{text-align:center}
+.exname{
+  font-family:'Bebas Neue',sans-serif;font-size:21px;letter-spacing:1px;
+  line-height:1.1;color:#f0f0ff;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.exmuscle{font-size:11px;color:rgba(255,255,255,.4);margin-top:1px}
+.exc{font-size:12px;color:rgba(255,255,255,.4);white-space:nowrap;flex-shrink:0}
+.prog-bar{height:3px;background:var(--border);border-radius:2px}
+.prog-fill{height:100%;border-radius:2px;background:var(--accent);transition:width .4s}
+
+/* ── Rest timer ─────────────────────────────────────────────────────────────── */
+.timer{
+  min-width:60px;height:32px;border-radius:20px;
+  border:1.5px solid var(--border);background:var(--s2);
+  color:var(--muted2);font-family:'Bebas Neue',sans-serif;
+  font-size:15px;letter-spacing:1px;cursor:pointer;
+  transition:.2s;padding:0 10px;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.timer.running{border-color:var(--accent);color:var(--accent);background:color-mix(in srgb,var(--accent) 10%,transparent)}
+.timer.done{
+  border-color:var(--danger);color:var(--danger);
+  background:color-mix(in srgb,var(--danger) 10%,transparent);
+  animation:blink .6s ease-in-out infinite alternate;
+}
+@keyframes blink{from{opacity:1}to{opacity:.4}}
+
+/* ── Session body ───────────────────────────────────────────────────────────── */
+.sess-body{
+  flex:1;overflow-y:auto;
+  padding:10px 16px;background:#0e0e16;
+  -webkit-overflow-scrolling:touch;
+}
+.sess-body::-webkit-scrollbar{width:2px}
+.sess-body::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:2px}
+
+/* ── Suggestion banner ──────────────────────────────────────────────────────── */
+.suggest{
+  background:color-mix(in srgb,var(--accent) 10%,#111118);
+  border:1px solid color-mix(in srgb,var(--accent) 30%,transparent);
+  border-radius:10px;padding:10px 14px;margin-bottom:10px;
+  display:flex;align-items:center;gap:12px;
+}
+.sug-w{font-family:'Bebas Neue',sans-serif;font-size:30px;color:var(--accent);line-height:1;flex-shrink:0}
+.sug-w span{font-size:14px}
+.sug-info{font-size:12px;color:var(--muted2);line-height:1.55}
+.sug-info strong{color:var(--text);font-size:13px}
+.sug-tag{font-size:10px;padding:2px 6px;border-radius:12px;margin-left:4px;font-weight:700}
+.up{background:color-mix(in srgb,#22c55e 15%,transparent);color:#22c55e}
+.hold{background:color-mix(in srgb,#f59e0b 15%,transparent);color:#f59e0b}
+.down{background:color-mix(in srgb,#ef4444 15%,transparent);color:#ef4444}
+
+/* ── Set table header ───────────────────────────────────────────────────────── */
+.set-hdr{
+  display:flex;align-items:center;padding:0 10px 5px;
+  font-size:10px;font-weight:700;letter-spacing:1.5px;
+  text-transform:uppercase;color:rgba(255,255,255,.28);
+}
+.shc-n{width:32px;flex-shrink:0;text-align:center}
+.shc-kg,.shc-rp,.shc-rir{flex:1;text-align:center}
+
+/* ── Set rows ───────────────────────────────────────────────────────────────── */
+.set-row{
+  display:flex;align-items:center;
+  background:#111118;border:1px solid rgba(255,255,255,.07);
+  border-radius:10px;padding:0 10px;
+  margin-bottom:4px;height:50px;
+  cursor:pointer;
+  transition:border-color .15s,background .15s;
+  user-select:none;-webkit-user-select:none;
+  overflow:hidden;
+}
+.set-row:active{background:#16161f}
+/* Active = currently editing */
+.set-row.active-row{border-color:var(--accent);background:#12121e}
+/* Done = reps + RIR logged */
+.set-row.done{border-color:color-mix(in srgb,var(--accent) 35%,transparent)}
+/* Done rows can still be tapped to re-edit */
+.set-row.done:active{background:#141420}
+
+.sr-num{font-family:'Bebas Neue',sans-serif;font-size:18px;width:32px;flex-shrink:0;text-align:center;color:rgba(255,255,255,.22);line-height:1}
+.sr-num.done{color:var(--accent)}
+.sr-val{flex:1;text-align:center;font-size:15px;font-weight:600;color:rgba(255,255,255,.85)}
+.sr-val.empty{color:rgba(255,255,255,.18);font-weight:400;font-size:13px}
+.sr-rir{flex:1;text-align:center}
+.rir-dot{display:inline-block;padding:2px 8px;border-radius:12px;font-size:12px;font-weight:700}
+
+/* ── Inline set editor ──────────────────────────────────────────────────────── */
+.set-editor{
+  background:#15151f;
+  border:1px solid color-mix(in srgb,var(--accent) 40%,transparent);
+  border-radius:12px;padding:12px 12px 10px;
+  margin-bottom:6px;margin-top:4px;
+}
+.se-inputs{display:flex;gap:8px;margin-bottom:10px}
+.se-field{flex:1;display:flex;flex-direction:column;gap:4px}
+.se-field label{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,.28);text-align:center}
+.se-input{
+  background:#1c1c28;border:1px solid rgba(255,255,255,.12);
+  border-radius:8px;color:#fff;
+  font-family:'DM Sans',sans-serif;font-size:20px;font-weight:700;
+  height:52px;text-align:center;width:100%;outline:none;
+  -webkit-appearance:none;appearance:none;
+}
+.se-input:focus{border-color:var(--accent);background:#1e1e2e}
+.se-rir-lbl{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,.28);margin-bottom:6px;text-align:center}
+.se-rir{display:flex;gap:6px}
+.srb{
+  flex:1;height:44px;
+  background:#1c1c28;border:1px solid rgba(255,255,255,.1);
+  border-radius:8px;color:rgba(255,255,255,.5);
+  font-size:13px;font-weight:700;font-family:'DM Sans',sans-serif;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:.12s;line-height:1.2;text-align:center;
+}
+.srb:active{transform:scale(.96)}
+.srb.on{background:color-mix(in srgb,var(--accent) 22%,transparent);border-color:var(--accent);color:var(--accent)}
+
+.info-btn{
+  background:none;border:none;cursor:pointer;
+  color:rgba(255,255,255,.35);font-size:15px;
+  width:28px;height:28px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  transition:.15s;padding:0;flex-shrink:0;
+}
+.info-btn:active{color:var(--accent)}
+
+.rir-leg{font-size:11px;color:var(--muted);padding:8px 0 2px;border-top:1px solid var(--border);margin-top:4px}
+.rir-leg strong{color:var(--muted2)}
+
+/* ── Session footer ─────────────────────────────────────────────────────────── */
+.sess-foot{
+  padding:10px 16px;
+  padding-bottom:calc(10px + var(--sab));
+  border-top:1px solid rgba(255,255,255,.08);
+  display:flex;gap:8px;flex-shrink:0;
+  background:#0e0e16;
+}
+
+/* ── Quit confirm banner ────────────────────────────────────────────────────── */
+.quit-banner{
+  position:absolute;top:0;left:0;right:0;
+  background:#1a1a24;border-bottom:1px solid var(--border2);
+  padding:14px 16px;display:flex;align-items:center;gap:10px;
+  z-index:50;
+}
+.quit-msg{flex:1;font-size:13px;color:var(--text)}
+.quit-cancel{
+  padding:7px 12px;border-radius:8px;border:1px solid var(--border2);
+  background:transparent;color:var(--muted2);font-size:13px;font-weight:600;
+  font-family:'DM Sans',sans-serif;cursor:pointer;
+}
+.quit-confirm{
+  padding:7px 12px;border-radius:8px;border:none;
+  background:var(--danger);color:#fff;font-size:13px;font-weight:600;
+  font-family:'DM Sans',sans-serif;cursor:pointer;
+}
+
+/* ── Instruction modal ──────────────────────────────────────────────────────── */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:200;display:flex;align-items:flex-end;justify-content:center}
+.modal{
+  background:var(--s1);border:1px solid var(--border2);
+  border-radius:20px 20px 0 0;padding:20px;
+  width:100%;max-width:480px;
+  max-height:82vh;overflow-y:auto;
+  /* Safe area padding at bottom inside modal */
+  padding-bottom:calc(20px + var(--sab));
+  -webkit-overflow-scrolling:touch;
+}
+.modal-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px}
+.modal-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px}
+.modal-muscle{font-size:12px;color:var(--muted2);margin-top:2px}
+.modal-body{display:flex;gap:16px;align-items:flex-start}
+.modal-cues{flex:1}
+.modal-cue{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;color:var(--muted2);line-height:1.5}
+.modal-cue:last-child{border-bottom:none}
+.modal-cue-n{font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--accent);width:16px;flex-shrink:0}
+
+/* ── Done screen ────────────────────────────────────────────────────────────── */
+.done{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;text-align:center}
+.done-icon{font-size:56px;margin-bottom:14px;animation:pop .4s cubic-bezier(.175,.885,.32,1.275) both}
+@keyframes pop{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+.done-title{font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:2px;margin-bottom:6px}
+.done-sub{color:var(--muted2);margin-bottom:20px;line-height:1.6;font-size:14px}
+.done-stats{width:100%;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:20px}
+.dstat{background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:12px 6px;text-align:center}
+.dstat-n{font-family:'Bebas Neue',sans-serif;font-size:26px;color:var(--accent)}
+.dstat-l{font-size:11px;color:var(--muted2);margin-top:2px}
+
+/* ── History ────────────────────────────────────────────────────────────────── */
+.hi{background:var(--s1);border:1px solid var(--border);border-radius:var(--r);margin-bottom:9px;overflow:hidden}
+.hi-hdr{padding:11px 14px;display:flex;align-items:center;gap:10px;cursor:pointer}
+.hi-hdr:active{background:var(--s2)}
+.hbadge{font-size:10px;font-weight:700;letter-spacing:.5px;padding:3px 9px;border-radius:20px;color:var(--accent);background:color-mix(in srgb,var(--accent) 15%,transparent)}
+.hdate{font-size:13px;color:var(--muted2);flex:1}
+.hbody{border-top:1px solid var(--border);padding:8px 14px}
+.hex{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--border)}
+.hex:last-child{border-bottom:none}
+.hex-name{font-size:13px;flex:1}
+.hex-meta{font-size:12px;color:var(--muted2)}
+.cbtn{font-size:11px;color:var(--accent);background:none;border:none;cursor:pointer;padding:2px 6px;font-family:'DM Sans',sans-serif}
+.cwrap{background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:10px;margin-top:6px}
+.ctitle{font-size:10px;font-weight:700;letter-spacing:1px;color:var(--muted2);margin-bottom:6px;text-transform:uppercase}
+
+/* ── Progress ───────────────────────────────────────────────────────────────── */
+.pec{background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:10px}
+.pec-name{font-size:15px;font-weight:600;margin-bottom:2px}
+.pec-stats{display:flex;gap:8px;margin-bottom:10px}
+.ps{background:var(--s2);border-radius:8px;padding:8px;flex:1;text-align:center}
+.ps-n{font-family:'Bebas Neue',sans-serif;font-size:21px;color:var(--accent)}
+.ps-l{font-size:10px;color:var(--muted2)}
+
+/* ── Misc ───────────────────────────────────────────────────────────────────── */
+.empty{text-align:center;padding:48px 20px;color:var(--muted);font-size:14px}
+.empty-icon{font-size:40px;margin-bottom:12px}
+.loading{
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  background:#09090f;color:#4f9cf9;
+  font-family:'DM Sans',sans-serif;font-size:15px;letter-spacing:1px;
+}
