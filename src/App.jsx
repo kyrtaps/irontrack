@@ -42,7 +42,15 @@ async function loadData() {
         }
       } catch { /* ignore */ }
     }
-    return val || getDefaultData();
+    if (!val) return getDefaultData();
+    // merge any seed sessions the user doesn't have yet (keyed by id)
+    const existingIds = new Set((val.sessions || []).map(s => s.id));
+    const missing = SEED_SESSIONS.filter(s => !existingIds.has(s.id));
+    if (missing.length) {
+      val = { ...val, sessions: [...missing, ...(val.sessions || [])] };
+      await db.put(DB_STORE, val, KEY);
+    }
+    return val;
   } catch {
     return getDefaultData();
   }
