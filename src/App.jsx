@@ -76,6 +76,16 @@ async function clearDraft() {
 
 // ─── Seed history ─────────────────────────────────────────────────────────────
 const SEED_SESSIONS = [
+  { id:"imp_20250512", type:"pull", date:"2025-05-12T09:00:00.000Z", exercises:[
+    { id:"single_arm_row", name:"Single-Arm DB Row", sets:[
+      {weight:"26",reps:"8",rir:1},{weight:"28",reps:"5",rir:1},{weight:"28",reps:"5",rir:1},{weight:"28",reps:"6",rir:1}]},
+    { id:"cable_row", name:"Seated Cable Row", sets:[
+      {weight:"35",reps:"6",rir:1},{weight:"35",reps:"6",rir:1},{weight:"35",reps:"6",rir:1},{weight:"35",reps:"6",rir:1}]},
+    { id:"ez_bar_curl", name:"EZ-Bar Curl", sets:[
+      {weight:"35",reps:"5",rir:1},{weight:"35",reps:"5",rir:1},{weight:"35",reps:"5",rir:1}]},
+    { id:"pull_up", name:"Pull-ups", sets:[
+      {weight:"BW",reps:"6",rir:2},{weight:"BW",reps:"6",rir:2},{weight:"BW",reps:"6",rir:2}]},
+  ]},
   { id:"imp_20250510", type:"push", date:"2025-05-10T09:00:00.000Z", exercises:[
     { id:"db_bench", name:"Flat DB Bench Press", sets:[
       {weight:"28",reps:"6",rir:1},{weight:"28",reps:"5",rir:1},{weight:"28",reps:"5",rir:1},{weight:"28",reps:"5",rir:1}]},
