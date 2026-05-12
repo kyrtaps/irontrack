@@ -379,3 +379,16 @@ button,a,[role="button"]{touch-action:manipulation}
   background:#09090f;color:#4f9cf9;
   font-family:'DM Sans',sans-serif;font-size:15px;letter-spacing:1px;
 }
+
+/* ── Auth / Login ───────────────────────────────────────────────────────────── */
+.login-wrap{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#09090f;padding:24px}
+.login-logo{font-family:'Bebas Neue',sans-serif;font-size:48px;letter-spacing:4px;color:#fff;margin-bottom:32px}
+.login-form{display:flex;flex-direction:column;gap:12px;width:100%;max-width:340px}
+.login-input{background:#1a1a28;border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:14px 16px;color:#fff;font-size:15px;font-family:'DM Sans',sans-serif;outline:none}
+.login-input:focus{border-color:#f97316}
+.login-btn{padding:14px;font-size:15px;width:100%;margin-top:4px}
+.login-error{color:#ef4444;font-size:13px;text-align:center;margin:0}
+.login-switch{background:none;border:none;color:rgba(255,255,255,.4);font-size:13px;cursor:pointer;padding:4px;font-family:'DM Sans',sans-serif}
+.login-switch:hover{color:rgba(255,255,255,.7)}
+.signout-btn{background:none;border:1px solid rgba(255,255,255,.15);border-radius:8px;color:rgba(255,255,255,.4);font-size:12px;padding:4px 10px;cursor:pointer;font-family:'DM Sans',sans-serif}
+.signout-btn:hover{color:rgba(255,255,255,.7);border-color:rgba(255,255,255,.3)}
