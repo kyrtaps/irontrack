@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { openDB } from "idb";
-import { onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopup, browserLocalPersistence, setPersistence } from "firebase/auth";
+import { onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, browserLocalPersistence, setPersistence } from "firebase/auth";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { auth, db } from "./firebase";
 import './App.css';
@@ -364,7 +364,10 @@ function LoginScreen() {
     setLoading(true);
     setError("");
     try {
-      await authWithPersistence(() => signInWithPopup(auth, googleProvider));
+      const isPWA = window.navigator.standalone || window.matchMedia("(display-mode: standalone)").matches;
+      await setPersistence(auth, browserLocalPersistence);
+      if (isPWA) await signInWithRedirect(auth, googleProvider);
+      else       await signInWithPopup(auth, googleProvider);
     } catch (err) { handleError(err); }
     setLoading(false);
   }
@@ -373,8 +376,8 @@ function LoginScreen() {
     <div className="login-wrap">
       <div className="login-logo">IRONTRACK</div>
       <form className="login-form" onSubmit={handleSubmit}>
-        <input className="login-input" type="email"    placeholder="Email"    value={email}    onChange={e=>setEmail(e.target.value)}    required />
-        <input className="login-input" type="password" placeholder="Password" value={password} onChange={e=>setPassword(e.target.value)} required />
+        <input className="login-input" type="email"    placeholder="Email"    value={email}    onChange={e=>setEmail(e.target.value)}    required autoComplete="email" />
+        <input className="login-input" type="password" placeholder="Password" value={password} onChange={e=>setPassword(e.target.value)} required autoComplete={isNew ? "new-password" : "current-password"} />
         {error && <p className="login-error">{error}</p>}
         <button className="btn btn-p login-btn" type="submit" disabled={loading}>
           {loading ? "…" : isNew ? "Create Account" : "Sign In"}
@@ -410,8 +413,9 @@ export default function App() {
   const [quitConfirm, setQuitConfirm] = useState(false);
   const timer = useRestTimer();
 
-  // Auth state listener
+  // Auth state listener — also picks up Google redirect result on return
   useEffect(() => {
+    getRedirectResult(auth).catch(() => {});
     return onAuthStateChanged(auth, u => setUser(u ?? null));
   }, []);
 
