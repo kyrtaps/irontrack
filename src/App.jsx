@@ -12,7 +12,7 @@ const KEY      = "gymtracker_v4";
 
 function getDefaultData() {
   return {
-    sessions: SEED_SESSIONS,
+    sessions: [],
     lastExercises: {
       pull: ["pull_up", "chest_supported_db_row", "ez_bar_curl"],
       push: ["db_bench", "incline_db_press", "db_ohp"],
@@ -47,19 +47,10 @@ async function loadData(uid) {
   try {
     const ref  = doc(db, "users", uid);
     const snap = await getDoc(ref);
-    let val = snap.exists() ? snap.data() : null;
-
-    if (!val) {
-      val = (await loadLocalData()) || getDefaultData();
-      await setDoc(ref, val);
-    }
-
-    const existingIds = new Set((val.sessions || []).map(s => s.id));
-    const missing = SEED_SESSIONS.filter(s => !existingIds.has(s.id));
-    if (missing.length) {
-      val = { ...val, sessions: [...missing, ...(val.sessions || [])] };
-      await setDoc(ref, val);
-    }
+    if (snap.exists()) return snap.data();
+    // new user — migrate local data if any, otherwise start empty
+    const val = (await loadLocalData()) || getDefaultData();
+    await setDoc(ref, val);
     return val;
   } catch {
     return getDefaultData();
@@ -80,93 +71,6 @@ async function loadDraft() {
 async function clearDraft() {
   try { const db = await getDB(); await db.delete(DB_STORE, DRAFT_KEY); } catch {}
 }
-
-// ─── Seed history ─────────────────────────────────────────────────────────────
-const SEED_SESSIONS = [
-  { id:"imp_20250512", type:"pull", date:"2025-05-12T09:00:00.000Z", exercises:[
-    { id:"single_arm_row", name:"Single-Arm DB Row", sets:[
-      {weight:"26",reps:"8",rir:1},{weight:"28",reps:"5",rir:1},{weight:"28",reps:"5",rir:1},{weight:"28",reps:"6",rir:1}]},
-    { id:"cable_row", name:"Seated Cable Row", sets:[
-      {weight:"35",reps:"6",rir:1},{weight:"35",reps:"6",rir:1},{weight:"35",reps:"6",rir:1},{weight:"35",reps:"6",rir:1}]},
-    { id:"ez_bar_curl", name:"EZ-Bar Curl", sets:[
-      {weight:"35",reps:"5",rir:1},{weight:"35",reps:"5",rir:1},{weight:"35",reps:"5",rir:1}]},
-    { id:"pull_up", name:"Pull-ups", sets:[
-      {weight:"BW",reps:"6",rir:2},{weight:"BW",reps:"6",rir:2},{weight:"BW",reps:"6",rir:2}]},
-  ]},
-  { id:"imp_20250510", type:"push", date:"2025-05-10T09:00:00.000Z", exercises:[
-    { id:"db_bench", name:"Flat DB Bench Press", sets:[
-      {weight:"28",reps:"6",rir:1},{weight:"28",reps:"5",rir:1},{weight:"28",reps:"5",rir:1},{weight:"28",reps:"5",rir:1}]},
-    { id:"incline_db_press", name:"Incline DB Press (45°)", sets:[
-      {weight:"26",reps:"5",rir:1},{weight:"26",reps:"5",rir:1},{weight:"26",reps:"4",rir:1}]},
-    { id:"db_ohp", name:"Overhead DB Shoulder Press", sets:[
-      {weight:"22",reps:"6",rir:1},{weight:"22",reps:"6",rir:1},{weight:"22",reps:"6",rir:1}]},
-  ]},
-  { id:"imp_20250507", type:"legs", date:"2025-05-07T09:00:00.000Z", exercises:[
-    { id:"incline_leg_press", name:"Incline Leg Press (45°)", sets:[
-      {weight:"180",reps:"6",rir:1},{weight:"180",reps:"6",rir:1},{weight:"180",reps:"6",rir:1},{weight:"180",reps:"6",rir:1}]},
-    { id:"rdl", name:"Romanian Deadlift (Barbell)", sets:[
-      {weight:"50",reps:"6",rir:1},{weight:"50",reps:"6",rir:1},{weight:"50",reps:"6",rir:1},{weight:"50",reps:"6",rir:1}]},
-  ]},
-  { id:"imp_20250505", type:"push", date:"2025-05-05T09:00:00.000Z", exercises:[
-    { id:"db_bench", name:"Flat DB Bench Press", sets:[
-      {weight:"28",reps:"5",rir:1},{weight:"28",reps:"5",rir:1},{weight:"28",reps:"5",rir:1}]},
-    { id:"incline_db_press", name:"Incline DB Press", sets:[
-      {weight:"24",reps:"8",rir:1},{weight:"26",reps:"5",rir:1},{weight:"26",reps:"5",rir:1}]},
-    { id:"db_ohp", name:"Overhead DB Shoulder Press", sets:[
-      {weight:"22",reps:"5",rir:1},{weight:"22",reps:"5",rir:1}]},
-  ]},
-  { id:"imp_20250503", type:"pull", date:"2025-05-03T09:00:00.000Z", exercises:[
-    { id:"pull_up", name:"Pull-ups", sets:[
-      {weight:"BW",reps:"5",rir:1},{weight:"BW",reps:"6",rir:0},{weight:"BW",reps:"5",rir:0},{weight:"BW",reps:"4",rir:0}]},
-    { id:"chest_supported_db_row", name:"Chest Supported DB Row", sets:[
-      {weight:"20",reps:"9",rir:1},{weight:"26",reps:"6",rir:1},{weight:"26",reps:"6",rir:1}]},
-    { id:"ez_bar_curl", name:"EZ Bar Curl", sets:[{weight:"34",reps:"5",rir:1}]},
-  ]},
-  { id:"imp_20250501", type:"push", date:"2025-05-01T09:00:00.000Z", exercises:[
-    { id:"db_bench", name:"DB Bench Press", sets:[
-      {weight:"28",reps:"5",rir:1},{weight:"28",reps:"5",rir:1},{weight:"28",reps:"5",rir:1},{weight:"28",reps:"5",rir:1}]},
-    { id:"incline_db_press", name:"Incline DB Press", sets:[
-      {weight:"24",reps:"6",rir:1},{weight:"24",reps:"6",rir:1},{weight:"24",reps:"6",rir:1}]},
-    { id:"db_ohp", name:"Seated DB Shoulder Press", sets:[
-      {weight:"20",reps:"6",rir:2},{weight:"20",reps:"8",rir:1},{weight:"20",reps:"6",rir:1}]},
-    { id:"tricep_pushdown", name:"Cable Triceps Pushdown", sets:[
-      {weight:"28",reps:"6",rir:1},{weight:"28",reps:"6",rir:1},{weight:"28",reps:"6",rir:1}]},
-  ]},
-  { id:"imp_20250429", type:"legs", date:"2025-04-29T09:00:00.000Z", exercises:[
-    { id:"squat", name:"Back Squat", sets:[
-      {weight:"60",reps:"6",rir:1},{weight:"60",reps:"6",rir:1},{weight:"60",reps:"5",rir:1}]},
-    { id:"rdl", name:"Romanian Deadlift", sets:[
-      {weight:"45",reps:"7",rir:2},{weight:"45",reps:"7",rir:2},{weight:"45",reps:"7",rir:2}]},
-    { id:"leg_curl", name:"Leg Curl Machine", sets:[
-      {weight:"50",reps:"10",rir:1},{weight:"55",reps:"10",rir:2},{weight:"65",reps:"6",rir:1}]},
-  ]},
-  { id:"imp_20250427", type:"pull", date:"2025-04-27T09:00:00.000Z", exercises:[
-    { id:"pull_up", name:"Pull-ups", sets:[
-      {weight:"BW",reps:"5",rir:2},{weight:"BW",reps:"6",rir:2},{weight:"BW",reps:"5",rir:2},{weight:"BW",reps:"5",rir:1}]},
-    { id:"cable_row", name:"Seated Cable Row", sets:[
-      {weight:"40",reps:"5",rir:1},{weight:"40",reps:"5",rir:1},{weight:"40",reps:"5",rir:1},{weight:"40",reps:"5",rir:1}]},
-  ]},
-  { id:"imp_20250425", type:"push", date:"2025-04-25T09:00:00.000Z", exercises:[
-    { id:"db_bench", name:"DB Bench Press", sets:[
-      {weight:"30",reps:"5",rir:1},{weight:"30",reps:"5",rir:1},{weight:"30",reps:"5",rir:1},{weight:"30",reps:"5",rir:1}]},
-    { id:"db_ohp", name:"Seated DB Shoulder Press", sets:[
-      {weight:"18",reps:"6",rir:2},{weight:"18",reps:"10",rir:2},{weight:"18",reps:"10",rir:2},{weight:"18",reps:"10",rir:2}]},
-  ]},
-  { id:"imp_20250423", type:"legs", date:"2025-04-23T09:00:00.000Z", exercises:[
-    { id:"hack_squat", name:"V-Squat", sets:[
-      {weight:"65",reps:"7",rir:2},{weight:"88",reps:"6",rir:2},{weight:"88",reps:"6",rir:2},{weight:"88",reps:"7",rir:2}]},
-    { id:"rdl_db", name:"RDL DB", sets:[
-      {weight:"24",reps:"8",rir:2},{weight:"24",reps:"8",rir:2},{weight:"24",reps:"8",rir:2}]},
-    { id:"leg_curl", name:"Leg Curl", sets:[
-      {weight:"20",reps:"12",rir:2},{weight:"25",reps:"9",rir:2},{weight:"25",reps:"9",rir:2}]},
-  ]},
-  { id:"imp_20250421", type:"pull", date:"2025-04-21T09:00:00.000Z", exercises:[
-    { id:"cable_row", name:"Standing Cable Row", sets:[
-      {weight:"28",reps:"12",rir:3},{weight:"36",reps:"8",rir:3},{weight:"40",reps:"10",rir:1},{weight:"36",reps:"8",rir:2}]},
-    { id:"ez_bar_curl", name:"EZ Bar Curl", sets:[
-      {weight:"30",reps:"5",rir:1},{weight:"30",reps:"6",rir:2},{weight:"30",reps:"6",rir:2},{weight:"30",reps:"6",rir:2}]},
-  ]},
-];
 
 // ─── Exercise library ─────────────────────────────────────────────────────────
 const EXERCISES = {
