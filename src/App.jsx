@@ -75,56 +75,68 @@ async function clearDraft() {
 // ─── Exercise library ─────────────────────────────────────────────────────────
 const EXERCISES = {
   pull: [
-    { id:"pull_up",          name:"Pull-ups",               muscle:"Lats",        cues:["Dead hang, arms fully extended","Pull elbows down to hips, chest to bar","Slow 3-second descent"] },
-    { id:"barbell_row",      name:"Barbell Row",             muscle:"Mid Back",    cues:["Hinge ~45°, flat back throughout","Row bar to lower chest","Squeeze shoulder blades at top"] },
-    { id:"cable_row",        name:"Seated Cable Row",        muscle:"Mid Back",    cues:["Sit tall, slight back lean","Pull handle to navel","Hold 1s squeeze, slow return"] },
-    { id:"lat_pulldown",     name:"Lat Pulldown",            muscle:"Lats",        cues:["Slight back lean, chest up","Pull bar to upper chest","Feel full lat stretch at top"] },
-    { id:"face_pull",        name:"Face Pull",               muscle:"Rear Delt",   cues:["Cable at eye height, rope attachment","Pull to face, elbows flared high","Pause and squeeze rear delts"] },
-    { id:"hammer_curl",      name:"Hammer Curl",             muscle:"Biceps",      cues:["Neutral grip, thumbs pointing up","Keep elbows pinned to sides","Full ROM top to bottom"] },
-    { id:"ez_bar_curl",      name:"EZ Bar Curl",             muscle:"Biceps",      cues:["Shoulder-width grip on angled bar","Curl to chin, elbows stay fixed","3-second eccentric on the way down"] },
-    { id:"incline_curl",     name:"Incline DB Curl",         muscle:"Biceps",      cues:["Bench at 45–60°, arms hang freely","Curl without swinging torso","Full stretch at the bottom"] },
-    { id:"chest_supported_db_row", name:"Chest Supported DB Row", muscle:"Mid Back", cues:["Chest on incline bench, feet on floor","Row DBs to hip line","Retract scapula before you pull"] },
-    { id:"single_arm_row",   name:"Single-Arm DB Row",       muscle:"Lats",        cues:["Knee and hand on bench for support","Row DB to hip, elbow close to body","Full stretch at the bottom"] },
-    { id:"cable_curl",       name:"Cable Curl",              muscle:"Biceps",      cues:["Low pulley, supinated grip","Curl keeping upper arm vertical","Peak squeeze at top"] },
-    { id:"neutral_pulldown", name:"Neutral-Grip Pulldown",   muscle:"Lats",        cues:["Palms face each other on bar","Pull to chin, elbows track straight down","Control the return"] },
-    { id:"reverse_curl",     name:"Reverse Curl",            muscle:"Brachialis",  cues:["Overhand (pronated) grip","Curl without elbow flare","Great for forearm development"] },
-    { id:"meadows_row",      name:"Meadows Row",             muscle:"Mid Back",    cues:["Landmine setup, perpendicular stance","Row to hip with full range of motion","Slight torso rotation OK"] },
-    { id:"cable_row_seated", name:"Standing Cable Row",      muscle:"Mid Back",    cues:["Stand with slight knee bend","Row to navel, brace core","Squeeze mid-back at top"] },
+    { id:"pull_up",          name:"Pull-ups",               muscle:"Lats",        cat:"vert_pull",  cues:["Dead hang, arms fully extended","Pull elbows down to hips, chest to bar","Slow 3-second descent"] },
+    { id:"barbell_row",      name:"Barbell Row",             muscle:"Mid Back",    cat:"row",        cues:["Hinge ~45°, flat back throughout","Row bar to lower chest","Squeeze shoulder blades at top"] },
+    { id:"cable_row",        name:"Seated Cable Row",        muscle:"Mid Back",    cat:"row",        cues:["Sit tall, slight back lean","Pull handle to navel","Hold 1s squeeze, slow return"] },
+    { id:"lat_pulldown",     name:"Lat Pulldown",            muscle:"Lats",        cat:"vert_pull",  cues:["Slight back lean, chest up","Pull bar to upper chest","Feel full lat stretch at top"] },
+    { id:"face_pull",        name:"Face Pull",               muscle:"Rear Delt",   cat:"rear_delt",  cues:["Cable at eye height, rope attachment","Pull to face, elbows flared high","Pause and squeeze rear delts"] },
+    { id:"hammer_curl",      name:"Hammer Curl",             muscle:"Biceps",      cat:"biceps",     cues:["Neutral grip, thumbs pointing up","Keep elbows pinned to sides","Full ROM top to bottom"] },
+    { id:"ez_bar_curl",      name:"EZ Bar Curl",             muscle:"Biceps",      cat:"biceps",     cues:["Shoulder-width grip on angled bar","Curl to chin, elbows stay fixed","3-second eccentric on the way down"] },
+    { id:"incline_curl",     name:"Incline DB Curl",         muscle:"Biceps",      cat:"biceps",     cues:["Bench at 45–60°, arms hang freely","Curl without swinging torso","Full stretch at the bottom"] },
+    { id:"chest_supported_db_row", name:"Chest Supported DB Row", muscle:"Mid Back", cat:"row",     cues:["Chest on incline bench, feet on floor","Row DBs to hip line","Retract scapula before you pull"] },
+    { id:"single_arm_row",   name:"Single-Arm DB Row",       muscle:"Lats",        cat:"row",        cues:["Knee and hand on bench for support","Row DB to hip, elbow close to body","Full stretch at the bottom"] },
+    { id:"cable_curl",       name:"Cable Curl",              muscle:"Biceps",      cat:"biceps",     cues:["Low pulley, supinated grip","Curl keeping upper arm vertical","Peak squeeze at top"] },
+    { id:"neutral_pulldown", name:"Neutral-Grip Pulldown",   muscle:"Lats",        cat:"vert_pull",  cues:["Palms face each other on bar","Pull to chin, elbows track straight down","Control the return"] },
+    { id:"reverse_curl",     name:"Reverse Curl",            muscle:"Brachialis",  cat:"biceps",     cues:["Overhand (pronated) grip","Curl without elbow flare","Great for forearm development"] },
+    { id:"meadows_row",      name:"Meadows Row",             muscle:"Mid Back",    cat:"row",        cues:["Landmine setup, perpendicular stance","Row to hip with full range of motion","Slight torso rotation OK"] },
+    { id:"cable_row_seated", name:"Standing Cable Row",      muscle:"Mid Back",    cat:"row",        cues:["Stand with slight knee bend","Row to navel, brace core","Squeeze mid-back at top"] },
   ],
   push: [
-    { id:"bench_press",      name:"Barbell Bench Press",     muscle:"Chest",       cues:["Arch, retract scapula, feet flat on floor","Bar to lower chest, elbows ~75° from torso","Drive through legs, full lockout"] },
-    { id:"incline_db_press", name:"Incline DB Press",        muscle:"Upper Chest", cues:["30–45° incline setting","DBs together at top, deep stretch at bottom","Keep wrists stacked over elbows"] },
-    { id:"ohp",              name:"Overhead Press",          muscle:"Shoulders",   cues:["Bar at collarbone, elbows slightly forward","Press overhead to full lockout","Brace core to protect lower back"] },
-    { id:"cable_fly",        name:"Cable Fly",               muscle:"Chest",       cues:["Cables at chest height","Arc motion with slight elbow bend throughout","Squeeze hard at centre"] },
-    { id:"lateral_raise",    name:"Lateral Raise",           muscle:"Side Delt",   cues:["Slight forward lean, soft elbow bend","Lead with elbows to shoulder height","Slow 3–4s lower — the eccentric matters"] },
-    { id:"tricep_pushdown",  name:"Cable Triceps Pushdown",  muscle:"Triceps",     cues:["Elbows pinned to sides throughout","Push to full lockout at the bottom","Don't let elbows drift forward"] },
-    { id:"skull_crusher",    name:"Skull Crusher",           muscle:"Triceps",     cues:["EZ bar, upper arms vertical","Lower to forehead, elbows stay narrow","Press back to vertical"] },
-    { id:"dip",              name:"Weighted Dip",            muscle:"Chest/Tri",   cues:["Slight forward lean for chest emphasis","Lower until shoulders below elbows","Lock out fully at top"] },
-    { id:"db_ohp",           name:"Seated DB Shoulder Press",muscle:"Shoulders",   cues:["Seat upright, DBs at ear height","Press overhead, slight inward arc","Don't shrug at the top"] },
-    { id:"incline_cable_fly",name:"Incline Cable Fly",       muscle:"Upper Chest", cues:["Low pulleys, use an incline bench","Arc up and together, feel the stretch","Emphasise the stretch at the bottom"] },
-    { id:"overhead_tri",     name:"Overhead Tricep Extension",muscle:"Triceps",    cues:["Elbows point forward, by ears","Lower rope or DB behind head","Extend to full lockout"] },
-    { id:"db_bench",         name:"DB Bench Press",          muscle:"Chest",       cues:["DBs touch at the top","Lower with control, elbows ~60°","Full press — don't hard lock"] },
-    { id:"arnold_press",     name:"Arnold Press",            muscle:"Shoulders",   cues:["Start with palms facing you at chin","Rotate outward as you press up","Reverse the rotation on descent"] },
-    { id:"pec_deck",         name:"Pec Deck",                muscle:"Chest",       cues:["Elbows on pad at chest height","Bring pads together and squeeze hard","3-second eccentric"] },
-    { id:"front_raise",      name:"Front Raise",             muscle:"Front Delt",  cues:["Palms down or neutral grip","Raise to eye level — don't swing","Control the descent slowly"] },
+    { id:"bench_press",      name:"Barbell Bench Press",     muscle:"Chest",       cat:"chest_compound",  cues:["Arch, retract scapula, feet flat on floor","Bar to lower chest, elbows ~75° from torso","Drive through legs, full lockout"] },
+    { id:"incline_db_press", name:"Incline DB Press",        muscle:"Upper Chest", cat:"upper_chest",     cues:["30–45° incline setting","DBs together at top, deep stretch at bottom","Keep wrists stacked over elbows"] },
+    { id:"ohp",              name:"Overhead Press",          muscle:"Shoulders",   cat:"shoulder_press",  cues:["Bar at collarbone, elbows slightly forward","Press overhead to full lockout","Brace core to protect lower back"] },
+    { id:"cable_fly",        name:"Cable Fly",               muscle:"Chest",       cat:"chest_iso",       cues:["Cables at chest height","Arc motion with slight elbow bend throughout","Squeeze hard at centre"] },
+    { id:"lateral_raise",    name:"Lateral Raise",           muscle:"Side Delt",   cat:"side_delt",       cues:["Slight forward lean, soft elbow bend","Lead with elbows to shoulder height","Slow 3–4s lower — the eccentric matters"] },
+    { id:"tricep_pushdown",  name:"Cable Triceps Pushdown",  muscle:"Triceps",     cat:"triceps",         cues:["Elbows pinned to sides throughout","Push to full lockout at the bottom","Don't let elbows drift forward"] },
+    { id:"skull_crusher",    name:"Skull Crusher",           muscle:"Triceps",     cat:"triceps",         cues:["EZ bar, upper arms vertical","Lower to forehead, elbows stay narrow","Press back to vertical"] },
+    { id:"dip",              name:"Weighted Dip",            muscle:"Chest/Tri",   cat:"chest_compound",  cues:["Slight forward lean for chest emphasis","Lower until shoulders below elbows","Lock out fully at top"] },
+    { id:"db_ohp",           name:"Seated DB Shoulder Press",muscle:"Shoulders",   cat:"shoulder_press",  cues:["Seat upright, DBs at ear height","Press overhead, slight inward arc","Don't shrug at the top"] },
+    { id:"incline_cable_fly",name:"Incline Cable Fly",       muscle:"Upper Chest", cat:"upper_chest",     cues:["Low pulleys, use an incline bench","Arc up and together, feel the stretch","Emphasise the stretch at the bottom"] },
+    { id:"overhead_tri",     name:"Overhead Tricep Extension",muscle:"Triceps",    cat:"triceps",         cues:["Elbows point forward, by ears","Lower rope or DB behind head","Extend to full lockout"] },
+    { id:"db_bench",         name:"DB Bench Press",          muscle:"Chest",       cat:"chest_compound",  cues:["DBs touch at the top","Lower with control, elbows ~60°","Full press — don't hard lock"] },
+    { id:"arnold_press",     name:"Arnold Press",            muscle:"Shoulders",   cat:"shoulder_press",  cues:["Start with palms facing you at chin","Rotate outward as you press up","Reverse the rotation on descent"] },
+    { id:"pec_deck",         name:"Pec Deck",                muscle:"Chest",       cat:"chest_iso",       cues:["Elbows on pad at chest height","Bring pads together and squeeze hard","3-second eccentric"] },
+    { id:"front_raise",      name:"Front Raise",             muscle:"Front Delt",  cat:"front_delt",      cues:["Palms down or neutral grip","Raise to eye level — don't swing","Control the descent slowly"] },
   ],
   legs: [
-    { id:"squat",            name:"Back Squat",              muscle:"Quads",       cues:["Bar on traps, brace hard before descent","Break at hips and knees simultaneously","Drive knees out, keep chest tall"] },
-    { id:"rdl",              name:"Romanian Deadlift",       muscle:"Hamstrings",  cues:["Hip hinge, soft knees throughout","Bar drags down shins until you feel hamstring stretch","Drive hips forward to stand tall"] },
-    { id:"leg_press",        name:"Leg Press",               muscle:"Quads",       cues:["Feet shoulder-width, mid-plate position","Lower until 90° knee angle","Don't lock out aggressively at top"] },
-    { id:"leg_curl",         name:"Leg Curl Machine",        muscle:"Hamstrings",  cues:["Lie prone, pad just above heels","Curl fully, keep hips pressed down","3-second eccentric on return"] },
-    { id:"bulgarian_split",  name:"Bulgarian Split Squat",   muscle:"Quads",       cues:["Rear foot elevated, torso upright","Front knee tracks over toes","Deep stretch at the bottom — go slow"] },
-    { id:"hip_thrust",       name:"Hip Thrust",              muscle:"Glutes",      cues:["Shoulders on bench, bar padded on hips","Drive hips to full extension","Squeeze glutes hard at the top"] },
-    { id:"hack_squat",       name:"V-Squat / Hack Squat",   muscle:"Quads",       cues:["Feet shoulder-width on the plate","Lower to 90° or below","Push through heels"] },
-    { id:"leg_extension",    name:"Leg Extension",           muscle:"Quads",       cues:["Pad positioned just above ankle","Extend fully and flex quads hard at top","Slow 3-second eccentric"] },
-    { id:"standing_calf",    name:"Standing Calf Raise",     muscle:"Calves",      cues:["Full ROM — deep stretch at the bottom","Pause at top, squeeze calves hard","Slow eccentric is the key"] },
-    { id:"seated_calf",      name:"Seated Calf Raise",       muscle:"Calves",      cues:["Knee bent 90°, pads on quads","Full stretch at the bottom","Soleus focused — great complement to standing"] },
-    { id:"sumo_deadlift",    name:"Sumo Deadlift",           muscle:"Hamstrings/Glutes", cues:["Wide stance, toes out ~45°","Grip inside legs, chest up","Push floor away, lock hips at top"] },
-    { id:"goblet_squat",     name:"Goblet Squat",            muscle:"Quads",       cues:["DB or KB at chest height","Elbows inside knees at the bottom","Great warm-up squat pattern"] },
-    { id:"nordic_curl",      name:"Nordic Curl",             muscle:"Hamstrings",  cues:["Feet anchored, kneel tall","Lower body slowly over 3–5 seconds","Catch with hands if needed at first"] },
-    { id:"rdl_db",           name:"RDL DB",                  muscle:"Hamstrings",  cues:["DBs in front of thighs","Hinge forward until you feel a hamstring stretch","Return by driving hips forward"] },
-    { id:"step_up",          name:"Weighted Step-Up",        muscle:"Glutes",      cues:["Step height roughly knee level","Drive through heel of the top foot","Don't push off the bottom foot"] },
+    { id:"squat",            name:"Back Squat",              muscle:"Quads",       cat:"quad_compound", cues:["Bar on traps, brace hard before descent","Break at hips and knees simultaneously","Drive knees out, keep chest tall"] },
+    { id:"rdl",              name:"Romanian Deadlift",       muscle:"Hamstrings",  cat:"hinge",         cues:["Hip hinge, soft knees throughout","Bar drags down shins until you feel hamstring stretch","Drive hips forward to stand tall"] },
+    { id:"leg_press",        name:"Leg Press",               muscle:"Quads",       cat:"quad_compound", cues:["Feet shoulder-width, mid-plate position","Lower until 90° knee angle","Don't lock out aggressively at top"] },
+    { id:"leg_curl",         name:"Leg Curl Machine",        muscle:"Hamstrings",  cat:"ham_iso",       cues:["Lie prone, pad just above heels","Curl fully, keep hips pressed down","3-second eccentric on return"] },
+    { id:"bulgarian_split",  name:"Bulgarian Split Squat",   muscle:"Quads",       cat:"quad_compound", cues:["Rear foot elevated, torso upright","Front knee tracks over toes","Deep stretch at the bottom — go slow"] },
+    { id:"hip_thrust",       name:"Hip Thrust",              muscle:"Glutes",      cat:"glutes",        cues:["Shoulders on bench, bar padded on hips","Drive hips to full extension","Squeeze glutes hard at the top"] },
+    { id:"hack_squat",       name:"V-Squat / Hack Squat",   muscle:"Quads",       cat:"quad_compound", cues:["Feet shoulder-width on the plate","Lower to 90° or below","Push through heels"] },
+    { id:"leg_extension",    name:"Leg Extension",           muscle:"Quads",       cat:"quad_iso",      cues:["Pad positioned just above ankle","Extend fully and flex quads hard at top","Slow 3-second eccentric"] },
+    { id:"standing_calf",    name:"Standing Calf Raise",     muscle:"Calves",      cat:"calves",        cues:["Full ROM — deep stretch at the bottom","Pause at top, squeeze calves hard","Slow eccentric is the key"] },
+    { id:"seated_calf",      name:"Seated Calf Raise",       muscle:"Calves",      cat:"calves",        cues:["Knee bent 90°, pads on quads","Full stretch at the bottom","Soleus focused — great complement to standing"] },
+    { id:"sumo_deadlift",    name:"Sumo Deadlift",           muscle:"Hamstrings/Glutes", cat:"hinge",   cues:["Wide stance, toes out ~45°","Grip inside legs, chest up","Push floor away, lock hips at top"] },
+    { id:"goblet_squat",     name:"Goblet Squat",            muscle:"Quads",       cat:"quad_compound", cues:["DB or KB at chest height","Elbows inside knees at the bottom","Great warm-up squat pattern"] },
+    { id:"nordic_curl",      name:"Nordic Curl",             muscle:"Hamstrings",  cat:"hinge",         cues:["Feet anchored, kneel tall","Lower body slowly over 3–5 seconds","Catch with hands if needed at first"] },
+    { id:"rdl_db",           name:"RDL DB",                  muscle:"Hamstrings",  cat:"hinge",         cues:["DBs in front of thighs","Hinge forward until you feel a hamstring stretch","Return by driving hips forward"] },
+    { id:"step_up",          name:"Weighted Step-Up",        muscle:"Glutes",      cat:"glutes",        cues:["Step height roughly knee level","Drive through heel of the top foot","Don't push off the bottom foot"] },
   ],
+};
+
+// Pull alternates each session: double-row week vs double-biceps week
+// Push: 1 chest compound + 1 shoulder press + 1 chest iso/upper chest + 1 delt isolation + 1 triceps
+// Legs: 1 quad compound + 1 hip hinge + 1 glutes + 1 isolation (quad or ham) + 1 calves
+const SLOT_TEMPLATES = {
+  pull: [
+    ["vert_pull", "row", "row",      "rear_delt", "biceps"],   // even session: double row
+    ["vert_pull", "row", "rear_delt","biceps",    "biceps"],   // odd session:  double biceps
+  ],
+  push: ["chest_compound", "shoulder_press", "upper_chest|chest_iso", "side_delt|front_delt", "triceps"],
+  legs: ["quad_compound", "hinge", "glutes", "quad_iso|ham_iso", "calves"],
 };
 
 // ─── Body diagram ─────────────────────────────────────────────────────────────
@@ -241,15 +253,25 @@ function parseRIR(v) {
 function latestOf(sessions,type){
   return [...sessions].filter(s=>s.type===type).sort((a,b)=>new Date(b.date)-new Date(a.date))[0]||null;
 }
-function pickExercises(type, last){
-  const pool=[...EXERCISES[type]];
+function pickExercises(type, last, sessions){
   const prev=last[type]||[];
-  pool.sort((a,b)=>{
-    const ai=prev.indexOf(a.id),bi=prev.indexOf(b.id);
-    if(ai===-1&&bi!==-1)return -1;if(ai!==-1&&bi===-1)return 1;
-    return Math.random()-.5;
-  });
-  return pool.slice(0,EX_N);
+  const template=SLOT_TEMPLATES[type];
+  const slots=Array.isArray(template[0])
+    ? template[(sessions||[]).filter(s=>s.type===type).length % template.length]
+    : template;
+  const used=new Set();
+  const picked=[];
+  for(const slot of slots){
+    const cats=slot.split("|");
+    const candidates=EXERCISES[type].filter(e=>cats.includes(e.cat)&&!used.has(e.id));
+    if(!candidates.length)continue;
+    const fresh=candidates.filter(e=>!prev.includes(e.id));
+    const pool=fresh.length?fresh:candidates;
+    const chosen=pool[Math.floor(Math.random()*pool.length)];
+    picked.push(chosen);
+    used.add(chosen.id);
+  }
+  return picked;
 }
 function getSuggestion(exId,exName,sessions){
   const sorted=[...sessions].sort((a,b)=>new Date(b.date)-new Date(a.date));
@@ -265,12 +287,14 @@ function getSuggestion(exId,exName,sessions){
       return{bw:true,hint,prevReps:Math.round(avgReps),avgRIR:avgRIR.toFixed(1)};
     }
     const avgRIR=done.reduce((a,ss)=>a+(parseRIR(ss.rir)??2),0)/done.length;
+    const avgReps=done.reduce((a,ss)=>a+(parseInt(ss.reps)||0),0)/done.length;
     const top=Math.max(...done.map(ss=>parseFloat(ss.weight)||0));
     let sug=top;
-    if(avgRIR>=3)sug=Math.round((top+5)/2.5)*2.5;         // too easy → go heavier
-    else if(avgRIR<=1)sug=Math.round((top+2.5)/2.5)*2.5;  // near failure → small step up
-    // RIR 2 → maintain same weight
-    return{weight:sug,prevWeight:top,avgRIR:avgRIR.toFixed(1),bw:false};
+    if(avgRIR>=3)sug=Math.round((top+5)/2.5)*2.5;              // too easy → go heavier
+    else if(avgRIR<=1)sug=Math.round((top+2.5)/2.5)*2.5;       // near failure → small step up
+    else if(avgReps>5)sug=Math.round((top+2.5)/2.5)*2.5;       // above strength range at RIR≈2 → nudge heavier
+    // RIR≈2 + reps≤5 (strength range) → maintain
+    return{weight:sug,prevWeight:top,avgRIR:avgRIR.toFixed(1),avgReps:Math.round(avgReps),bw:false};
   }
   return null;
 }
@@ -285,6 +309,112 @@ function getHistory(exId,exName,sessions){
     pts.push({date:s.date,weight:top,reps:parseInt(done.find(ss=>parseFloat(ss.weight)===top)?.reps||0)});
   });
   return pts;
+}
+
+function getLastSets(exId,exName,sessions){
+  const sorted=[...sessions].sort((a,b)=>new Date(b.date)-new Date(a.date));
+  for(const s of sorted){
+    const ex=s.exercises?.find(e=>e.id===exId||e.name?.toLowerCase()===exName?.toLowerCase());
+    if(ex?.sets?.length)return ex.sets;
+  }
+  return[];
+}
+
+function calcPlates(targetKg,barKg=20){
+  const sizes=[25,20,15,10,5,2.5,1.25];
+  let rem=Math.max(0,Math.round(((targetKg-barKg)/2)*1000)/1000);
+  const out=[];
+  for(const p of sizes){while(rem>=p-0.001){out.push(p);rem=Math.round((rem-p)*1000)/1000;}}
+  return out;
+}
+
+function weeklyVolume(sessions){
+  const now=Date.now(),W=7*24*3600*1000;
+  const count=arr=>{
+    const c={pull:0,push:0,legs:0};
+    arr.forEach(s=>{
+      const n=s.exercises?.reduce((t,ex)=>t+(ex.sets?.filter(ss=>ss.reps).length||0),0)||0;
+      if(s.type in c)c[s.type]+=n;
+    });
+    return c;
+  };
+  return{
+    cur:count(sessions.filter(s=>now-new Date(s.date)<W)),
+    prev:count(sessions.filter(s=>{const a=now-new Date(s.date);return a>=W&&a<2*W;}))
+  };
+}
+
+// ─── Plate calculator component ───────────────────────────────────────────────
+function PlateCalc({defaultKg,onClose}){
+  const[weight,setWeight]=useState(String(defaultKg||''));
+  const[bar,setBar]=useState(20);
+  const target=parseFloat(weight)||0;
+  const plates=target>0?calcPlates(target,bar):[];
+  const achievable=bar+plates.reduce((a,p)=>a+p,0)*2;
+  const plateColors={25:'#ef4444',20:'#3b82f6',15:'#f59e0b',10:'#22c55e',5:'#8b5cf6',2.5:'#ec4899',1.25:'#94a3b8'};
+  return(<>
+    <div className="modal-head">
+      <div className="modal-title">Plate Calculator</div>
+      <button className="ib" onClick={onClose}>✕</button>
+    </div>
+    <div style={{marginBottom:14}}>
+      <div className="se-rir-lbl" style={{marginBottom:8}}>Bar Weight</div>
+      <div className="se-rir">
+        {[15,20].map(w=>(
+          <button key={w} className={`srb${bar===w?' on':''}`} onClick={()=>setBar(w)}>{w} kg</button>
+        ))}
+      </div>
+    </div>
+    <div style={{marginBottom:16}}>
+      <div className="se-rir-lbl" style={{marginBottom:8}}>Target Weight (kg)</div>
+      <input className="se-input" type="text" inputMode="decimal" placeholder="e.g. 100"
+        value={weight} autoFocus
+        onChange={e=>setWeight(e.target.value.replace(/[^0-9.]/g,''))}/>
+    </div>
+    {target>0&&(<>
+      <div style={{fontSize:10,fontWeight:700,letterSpacing:1.5,textTransform:'uppercase',color:'rgba(255,255,255,.28)',marginBottom:10}}>
+        Plates per side
+      </div>
+      {plates.length>0?(
+        <div style={{display:'flex',flexWrap:'wrap',gap:8,marginBottom:14}}>
+          {plates.map((p,i)=>(
+            <div key={i} style={{
+              background:`${plateColors[p]||'#666'}22`,
+              border:`1.5px solid ${plateColors[p]||'#666'}`,
+              borderRadius:8,padding:'6px 14px',
+              fontFamily:"'Bebas Neue',sans-serif",fontSize:22,
+              color:plateColors[p]||'#fff'
+            }}>{p}</div>
+          ))}
+        </div>
+      ):(
+        <div style={{color:'var(--muted2)',fontSize:13,marginBottom:14}}>
+          {target<bar?`Target less than bar (${bar}kg) — use bar only`:'Bar only — no plates needed'}
+        </div>
+      )}
+      <div style={{background:'var(--s2)',borderRadius:10,padding:'10px 14px',textAlign:'center'}}>
+        <span style={{fontSize:12,color:'var(--muted2)'}}>Total on bar: </span>
+        <strong style={{fontSize:20,fontFamily:"'Bebas Neue',sans-serif",color:'var(--accent)'}}>{achievable} kg</strong>
+        {achievable!==target&&<div style={{fontSize:11,color:'var(--muted)',marginTop:2}}>nearest achievable to {target} kg</div>}
+      </div>
+    </>)}
+  </>);
+}
+
+// ─── Session duration hook ─────────────────────────────────────────────────────
+function useSessionDuration(start){
+  const[secs,setSecs]=useState(0);
+  useEffect(()=>{
+    if(!start){setSecs(0);return;}
+    const upd=()=>setSecs(Math.floor((Date.now()-start)/1000));
+    upd();
+    const iv=setInterval(upd,1000);
+    const onVis=()=>{if(document.visibilityState==='visible')upd();};
+    document.addEventListener('visibilitychange',onVis);
+    return()=>{clearInterval(iv);document.removeEventListener('visibilitychange',onVis);};
+  },[start]);
+  const m=Math.floor(secs/60),s=secs%60;
+  return`${m}:${String(s).padStart(2,'0')}`;
 }
 
 // ─── Sparkline ────────────────────────────────────────────────────────────────
@@ -411,7 +541,11 @@ export default function App() {
   const [instrEx, setInstrEx] = useState(null);
   const [activeSet, setActiveSet] = useState(0);
   const [quitConfirm, setQuitConfirm] = useState(false);
+  const [sessionStart, setSessionStart] = useState(null);
+  const [swapMode, setSwapMode] = useState(false);
+  const [showPlates, setShowPlates] = useState(false);
   const timer = useRestTimer();
+  const duration = useSessionDuration(sessionStart);
 
   // Auth state listener — also picks up Google redirect result on return
   useEffect(() => {
@@ -432,6 +566,7 @@ export default function App() {
         setExIdx(draft.exIdx);
         setSets(draft.sets);
         setActiveSet(draft.activeSet ?? 0);
+        setSessionStart(draft.sessionStart ?? null);
       }
       setDbReady(true);
     });
@@ -446,7 +581,7 @@ export default function App() {
   useEffect(() => {
     if (!dbReady) return;
     if (screen === "session" || screen === "warmup") {
-      saveDraft({ screen, aType, exs, exIdx, sets, activeSet });
+      saveDraft({ screen, aType, exs, exIdx, sets, activeSet, sessionStart });
     } else {
       clearDraft();
     }
@@ -467,11 +602,13 @@ export default function App() {
     const updated = cur.map((s,i)=>i===si?{...s,[f]:v}:s);
     if(f==="rir"){
       const thisWeight = updated[si].weight;
+      const thisReps = parseInt(updated[si].reps)||0;
       const next = si+1;
       if(thisWeight!==""&&next<updated.length&&updated[next].weight===""){
         const rir=Number(v);
-        const nextW = rir>=3
-          ? String(Math.round((parseFloat(thisWeight)+2.5)/2.5)*2.5)
+        const w=parseFloat(thisWeight);
+        const nextW=(rir>=3||(rir===2&&thisReps>5))
+          ? String(Math.round((w+2.5)/2.5)*2.5)
           : thisWeight;
         updated[next]={...updated[next],weight:nextW};
       }
@@ -482,7 +619,7 @@ export default function App() {
   const isDone = s => s.reps!==""&&s.rir!==null;
 
   const startSession = type => {
-    const picked=pickExercises(type,data.lastExercises);
+    const picked=pickExercises(type,data.lastExercises,data.sessions);
     setAType(type);setExs(picked);setExIdx(0);setSets({});setActiveSet(0);setScreen("warmup");
   };
 
@@ -494,6 +631,7 @@ export default function App() {
     setData(prev=>({...prev,sessions:[...prev.sessions,session],
       lastExercises:{...prev.lastExercises,[aType]:exs.map(e=>e.id)}}));
     clearDraft();
+    setSessionStart(null);
     setScreen("done");
   };
 
@@ -530,6 +668,44 @@ export default function App() {
   const fmtL = d => new Date(d).toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"short"});
 
   return(<>
+    {showPlates&&(
+      <div className="overlay" onClick={()=>setShowPlates(false)}>
+        <div className="modal" onClick={e=>e.stopPropagation()}>
+          <PlateCalc defaultKg={sug?.weight??''} onClose={()=>setShowPlates(false)}/>
+        </div>
+      </div>
+    )}
+
+    {swapMode&&curEx&&(
+      <div className="overlay" onClick={()=>setSwapMode(false)}>
+        <div className="modal" onClick={e=>e.stopPropagation()}>
+          <div className="modal-head">
+            <div><div className="modal-title">Swap Exercise</div>
+            <div className="modal-muscle">Replace: {curEx.name}</div></div>
+            <button className="ib" onClick={()=>setSwapMode(false)}>✕</button>
+          </div>
+          {EXERCISES[aType]
+            .filter(ex=>ex.id!==curEx.id&&!exs.some(e=>e.id===ex.id))
+            .map(ex=>(
+              <div key={ex.id} className="swap-item" onClick={()=>{
+                const next=[...exs];next[exIdx]=ex;setExs(next);
+                setSets(prev=>{const n={...prev};delete n[curEx.id];return n;});
+                setActiveSet(0);setSwapMode(false);
+              }}>
+                <div style={{flex:1}}>
+                  <div style={{fontSize:14,fontWeight:600,color:'var(--text)'}}>{ex.name}</div>
+                  <div style={{fontSize:11,color:'var(--muted2)',marginTop:2}}>{ex.muscle}</div>
+                </div>
+                <span style={{color:'var(--muted)',fontSize:18}}>›</span>
+              </div>
+            ))}
+          {EXERCISES[aType].filter(ex=>ex.id!==curEx.id&&!exs.some(e=>e.id===ex.id)).length===0&&(
+            <div style={{color:'var(--muted2)',fontSize:13,padding:'12px 0',textAlign:'center'}}>All exercises already in this session.</div>
+          )}
+        </div>
+      </div>
+    )}
+
     {instrEx&&(
       <div className="overlay" onClick={()=>setInstrEx(null)}>
         <div className="modal" onClick={e=>e.stopPropagation()}>
@@ -560,6 +736,29 @@ export default function App() {
           <div className="streak-n">{streak}</div>
           <div className="streak-i"><strong>Session Streak</strong>{data.sessions.length} total sessions</div>
         </div>
+        {(()=>{
+          const vol=weeklyVolume(data.sessions);
+          const types=['pull','push','legs'];
+          const total=types.reduce((a,t)=>a+vol.cur[t],0);
+          if(total===0)return null;
+          return(
+            <div className="vol-card">
+              <div className="sl" style={{marginTop:14,marginBottom:8}}>This Week</div>
+              <div className="vol-grid">
+                {types.map(t=>{
+                  const c=vol.cur[t],p=vol.prev[t],d=c-p;
+                  return(
+                    <div key={t} className="vol-item" style={{"--accent":SESSION_COLORS[t]}}>
+                      <div className="vol-n">{c}</div>
+                      <div className="vol-l">{SESSION_LABELS[t]}</div>
+                      {p>0&&<div className="vol-d" style={{color:d>=0?"#22c55e":"#ef4444"}}>{d>=0?"+":""}{d}</div>}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })()}
         <div className="sl">Start Session</div>
         {["pull","push","legs"].map(type=>{
           const last=latestOf(data.sessions,type);
@@ -691,7 +890,7 @@ export default function App() {
             </div>
           ))}
         </div>
-        <button className="btn btn-p" style={{width:"100%",fontSize:15}} onClick={()=>setScreen("session")}>
+        <button className="btn btn-p" style={{width:"100%",fontSize:15}} onClick={()=>{setSessionStart(Date.now());setScreen("session");}}>
           Warmup Done — Let's Go 💪
         </button>
       </div>
@@ -703,7 +902,7 @@ export default function App() {
           <div className="quit-banner">
             <span className="quit-msg">Quit and discard session?</span>
             <button className="quit-cancel" onClick={()=>setQuitConfirm(false)}>Keep</button>
-            <button className="quit-confirm" onClick={()=>{clearDraft();setScreen("home");setQuitConfirm(false);}}>Quit</button>
+            <button className="quit-confirm" onClick={()=>{clearDraft();setSessionStart(null);setScreen("home");setQuitConfirm(false);}}>Quit</button>
           </div>
         )}
         <div className="sess-top">
@@ -715,8 +914,8 @@ export default function App() {
             </div>
             <button className="info-btn" onClick={()=>setInstrEx(curEx)}>ℹ</button>
           </div>
-          <div style={{display:"flex",alignItems:"center",gap:6}}>
-            <span className="exc">{exIdx+1}/{exs.length}</span>
+          <div style={{display:"flex",alignItems:"center",gap:6,flexShrink:0}}>
+            <span className="exc">{exIdx+1}/{exs.length}<br/><span style={{fontSize:10,letterSpacing:.5}}>{duration}</span></span>
             <button className={`timer ${timer.state}`} onClick={timer.toggle}
               title={timer.state==="idle"?"Start 2 min rest":timer.state==="done"?"Tap to reset":"Tap to cancel"}>
               {timer.state==="idle"?"2:00":timer.display}
@@ -733,29 +932,37 @@ export default function App() {
               <div className="sug-w">BW</div>
               <div className="sug-info"><strong>Bodyweight</strong><br/>Last avg: {sug.prevReps} reps · RIR {sug.avgRIR}<br/>{sug.hint}</div>
             </>):(<>
-              <div className="sug-w">{sug.weight}<span>kg</span></div>
+              <div className="sug-w" style={{cursor:'pointer'}} onClick={()=>setShowPlates(true)}>{sug.weight}<span>kg</span></div>
               <div className="sug-info">
                 <strong>Suggested</strong>
                 {(()=>{const t=trendTag(sug);return t?<span className={`sug-tag ${t.cls}`}>{t.lbl}</span>:null;})()}
                 <br/>Last: {sug.prevWeight}kg · RIR {sug.avgRIR}
               </div>
+              <button className="ib" style={{width:32,height:32,fontSize:15,flexShrink:0}} onClick={()=>setShowPlates(true)} title="Plate calculator">🏋️</button>
             </>)}
           </div>
         ):(
-          <div style={{background:"var(--s1)",border:"1px solid var(--border)",borderRadius:10,padding:"9px 14px",marginBottom:12,fontSize:12,color:"var(--muted2)"}}>
-            💡 First time logging this — pick a comfortable starting weight.
+          <div style={{background:"var(--s1)",border:"1px solid var(--border)",borderRadius:10,padding:"9px 14px",marginBottom:10,fontSize:12,color:"var(--muted2)",display:'flex',alignItems:'center',gap:8}}>
+            <span style={{flex:1}}>💡 First time — pick a comfortable starting weight.</span>
+            <button className="ib" style={{width:32,height:32,fontSize:15,flexShrink:0}} onClick={()=>setShowPlates(true)} title="Plate calculator">🏋️</button>
           </div>
         )}
 
+        {(() => {
+          const ghostSets = getLastSets(curEx.id, curEx.name, data.sessions);
+          const hasGhost = ghostSets.length > 0;
+          return (<>
         <div className="set-hdr">
           <span className="shc-n">#</span>
           <span className="shc-kg">KG</span>
           <span className="shc-rp">REPS</span>
           <span className="shc-rir">RIR</span>
+          {hasGhost&&<span style={{fontSize:9,color:'rgba(255,255,255,.2)',letterSpacing:.5,whiteSpace:'nowrap',paddingRight:2}}>LAST</span>}
         </div>
         {curSets.map((s,i)=>{
           const done=isDone(s);
           const isActive=activeSet===i;
+          const ghost=ghostSets[i];
           const rirColors=["#ef4444","#f97316","#eab308","#22c55e"];
           return(
             <div key={i}>
@@ -769,12 +976,18 @@ export default function App() {
                     {s.weight||"BW"}{!isBW(s.weight)?" kg":""} · {s.reps} reps · RIR {s.rir}
                   </span>
                 ) : (<>
-                  <span className={`sr-val${!s.weight?" empty":""}`}>{s.weight||"—"}</span>
-                  <span className={`sr-val${!s.reps?" empty":""}`}>{s.reps||"—"}</span>
+                  <span className={`sr-val${!s.weight?" empty":""}`} style={!s.weight&&ghost?.weight?{color:'rgba(255,255,255,.3)'}:{}}>
+                    {s.weight||(ghost?.weight||"—")}
+                  </span>
+                  <span className={`sr-val${!s.reps?" empty":""}`} style={!s.reps&&ghost?.reps?{color:'rgba(255,255,255,.3)'}:{}}>
+                    {s.reps||(ghost?.reps||"—")}
+                  </span>
                   <span className="sr-rir">
                     {s.rir!==null
                       ? <span className="rir-dot" style={{background:`${rirColors[s.rir]}22`,color:rirColors[s.rir]}}>RIR {s.rir}</span>
-                      : <span className="rir-dot" style={{color:"rgba(255,255,255,.2)"}}>—</span>}
+                      : ghost?.rir!=null
+                        ? <span className="rir-dot" style={{color:'rgba(255,255,255,.28)'}}>RIR {ghost.rir}</span>
+                        : <span className="rir-dot" style={{color:"rgba(255,255,255,.2)"}}>—</span>}
                   </span>
                 </>)}
               </div>
@@ -826,12 +1039,15 @@ export default function App() {
           );
         })}
         <div className="rir-leg" style={{marginTop:8}}><strong style={{color:"rgba(255,255,255,.5)"}}>Tap a row</strong> to log · RIR 0 = max effort · 3 = easy</div>
+          </>);
+        })()}
       </div>
 
       <div className="sess-foot">
+        <button className="btn btn-g" style={{flex:'none',padding:'0 14px',fontSize:18}} onClick={()=>setSwapMode(true)} title="Swap exercise">⇄</button>
         {exIdx>0&&<button className="btn btn-g" onClick={()=>setExIdx(exIdx-1)}>← Back</button>}
         <button className="btn btn-p" onClick={nextEx}>
-          {exIdx<exs.length-1?"Next Exercise →":"Finish Session ✓"}
+          {exIdx<exs.length-1?"Next →":"Finish ✓"}
         </button>
       </div>
     </>)}
