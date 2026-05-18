@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { openDB } from "idb";
-import { onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, browserLocalPersistence, setPersistence } from "firebase/auth";
+import { onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, browserLocalPersistence, setPersistence, updatePassword, reauthenticateWithCredential, EmailAuthProvider } from "firebase/auth";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { auth, db } from "./firebase";
 import './App.css';
@@ -447,6 +447,86 @@ function Sparkline({points,color,h=60}){
 }
 
 
+// ─── Change password modal ────────────────────────────────────────────────────
+function ChangePasswordModal({ user, onClose }) {
+  const [current, setCurrent] = useState("");
+  const [next,    setNext]    = useState("");
+  const [confirm, setConfirm] = useState("");
+  const [error,   setError]   = useState("");
+  const [success, setSuccess] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const isEmailUser = user.providerData.some(p => p.providerId === "password");
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    setError("");
+    if (next.length < 6)    { setError("Password must be at least 6 characters."); return; }
+    if (next !== confirm)   { setError("Passwords don't match."); return; }
+    setLoading(true);
+    try {
+      const credential = EmailAuthProvider.credential(user.email, current);
+      await reauthenticateWithCredential(user, credential);
+      await updatePassword(user, next);
+      setSuccess(true);
+    } catch (err) {
+      const code = err.code || "";
+      const msg = {
+        "auth/wrong-password":    "Current password is incorrect.",
+        "auth/invalid-credential":"Current password is incorrect.",
+        "auth/too-many-requests": "Too many attempts. Try again later.",
+        "auth/weak-password":     "New password must be at least 6 characters.",
+      }[code] || err.message.replace("Firebase: ","").replace(/ \(auth\/.*\)\.?/,"") || "Something went wrong.";
+      setError(msg);
+    }
+    setLoading(false);
+  }
+
+  return (
+    <div className="overlay" onClick={onClose}>
+      <div className="modal" onClick={e => e.stopPropagation()}>
+        <div className="modal-head">
+          <div className="modal-title">Change Password</div>
+          <button className="ib" onClick={onClose}>✕</button>
+        </div>
+        {!isEmailUser ? (
+          <div style={{color:"var(--muted2)",fontSize:13,lineHeight:1.6}}>
+            Your account uses Google sign-in. Password changes must be made through your Google account settings.
+          </div>
+        ) : success ? (
+          <div style={{textAlign:"center",padding:"16px 0"}}>
+            <div style={{fontSize:40,marginBottom:10}}>✓</div>
+            <div style={{color:"#22c55e",fontWeight:600,marginBottom:16}}>Password updated!</div>
+            <button className="btn btn-p" style={{width:"100%"}} onClick={onClose}>Done</button>
+          </div>
+        ) : (
+          <form onSubmit={handleSubmit} style={{display:"flex",flexDirection:"column",gap:12}}>
+            <div>
+              <div className="se-rir-lbl" style={{marginBottom:6,textAlign:"left"}}>Current Password</div>
+              <input className="se-input" type="password" value={current} autoFocus
+                onChange={e=>setCurrent(e.target.value)} autoComplete="current-password" required/>
+            </div>
+            <div>
+              <div className="se-rir-lbl" style={{marginBottom:6,textAlign:"left"}}>New Password</div>
+              <input className="se-input" type="password" value={next}
+                onChange={e=>setNext(e.target.value)} autoComplete="new-password" required/>
+            </div>
+            <div>
+              <div className="se-rir-lbl" style={{marginBottom:6,textAlign:"left"}}>Confirm New Password</div>
+              <input className="se-input" type="password" value={confirm}
+                onChange={e=>setConfirm(e.target.value)} autoComplete="new-password" required/>
+            </div>
+            {error && <p className="login-error">{error}</p>}
+            <button className="btn btn-p" type="submit" disabled={loading} style={{marginTop:4}}>
+              {loading ? "…" : "Update Password"}
+            </button>
+          </form>
+        )}
+      </div>
+    </div>
+  );
+}
+
 // ─── Login screen ─────────────────────────────────────────────────────────────
 const googleProvider = new GoogleAuthProvider();
 
@@ -543,7 +623,8 @@ export default function App() {
   const [quitConfirm, setQuitConfirm] = useState(false);
   const [sessionStart, setSessionStart] = useState(null);
   const [swapMode, setSwapMode] = useState(false);
-  const [showPlates, setShowPlates] = useState(false);
+  const [showPlates,    setShowPlates]    = useState(false);
+  const [showChangePw,  setShowChangePw]  = useState(false);
   const timer = useRestTimer();
   const duration = useSessionDuration(sessionStart);
 
@@ -668,6 +749,10 @@ export default function App() {
   const fmtL = d => new Date(d).toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"short"});
 
   return(<>
+    {showChangePw&&(
+      <ChangePasswordModal user={user} onClose={()=>setShowChangePw(false)}/>
+    )}
+
     {showPlates&&(
       <div className="overlay" onClick={()=>setShowPlates(false)}>
         <div className="modal" onClick={e=>e.stopPropagation()}>
@@ -730,7 +815,7 @@ export default function App() {
     <div className="app" style={{"--accent":accent}}>
 
     {screen==="home"&&tab==="home"&&(<>
-      <div className="hdr"><div className="logo">IRON<em>TRACK</em></div><button className="signout-btn" onClick={()=>signOut(auth)}>Sign out</button></div>
+      <div className="hdr"><div className="logo">IRON<em>TRACK</em></div><div style={{display:"flex",gap:8,alignItems:"center"}}><button className="signout-btn" onClick={()=>setShowChangePw(true)}>Change PW</button><button className="signout-btn" onClick={()=>signOut(auth)}>Sign out</button></div></div>
       <div className="sb">
         <div className="streak">
           <div className="streak-n">{streak}</div>
