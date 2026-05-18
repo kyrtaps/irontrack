@@ -455,6 +455,8 @@ function ChangePasswordModal({ user, onClose }) {
   const [error,   setError]   = useState("");
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [resetSent,   setResetSent]   = useState(false);
+  const [resetLoading,setResetLoading]= useState(false);
 
   const isEmailUser = user.providerData.some(p => p.providerId === "password");
 
@@ -482,6 +484,18 @@ function ChangePasswordModal({ user, onClose }) {
     setLoading(false);
   }
 
+  async function handleReset() {
+    setResetLoading(true);
+    setError("");
+    try {
+      await sendPasswordResetEmail(auth, user.email);
+      setResetSent(true);
+    } catch (err) {
+      setError(err.message.replace("Firebase: ","").replace(/ \(auth\/.*\)\.?/,"") || "Something went wrong.");
+    }
+    setResetLoading(false);
+  }
+
   return (
     <div className="overlay" onClick={onClose}>
       <div className="modal" onClick={e => e.stopPropagation()}>
@@ -500,27 +514,37 @@ function ChangePasswordModal({ user, onClose }) {
             <button className="btn btn-p" style={{width:"100%"}} onClick={onClose}>Done</button>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} style={{display:"flex",flexDirection:"column",gap:12}}>
-            <div>
-              <div className="se-rir-lbl" style={{marginBottom:6,textAlign:"left"}}>Current Password</div>
-              <input className="se-input" type="password" value={current} autoFocus
-                onChange={e=>setCurrent(e.target.value)} autoComplete="current-password" required/>
+          <>
+            <form onSubmit={handleSubmit} style={{display:"flex",flexDirection:"column",gap:12}}>
+              <div>
+                <div className="se-rir-lbl" style={{marginBottom:6,textAlign:"left"}}>Current Password</div>
+                <input className="se-input" type="password" value={current} autoFocus
+                  onChange={e=>setCurrent(e.target.value)} autoComplete="current-password" required/>
+              </div>
+              <div>
+                <div className="se-rir-lbl" style={{marginBottom:6,textAlign:"left"}}>New Password</div>
+                <input className="se-input" type="password" value={next}
+                  onChange={e=>setNext(e.target.value)} autoComplete="new-password" required/>
+              </div>
+              <div>
+                <div className="se-rir-lbl" style={{marginBottom:6,textAlign:"left"}}>Confirm New Password</div>
+                <input className="se-input" type="password" value={confirm}
+                  onChange={e=>setConfirm(e.target.value)} autoComplete="new-password" required/>
+              </div>
+              {error && <p className="login-error">{error}</p>}
+              <button className="btn btn-p" type="submit" disabled={loading} style={{marginTop:4}}>
+                {loading ? "…" : "Update Password"}
+              </button>
+            </form>
+            <div style={{borderTop:"1px solid var(--border)",marginTop:16,paddingTop:14,textAlign:"center"}}>
+              {resetSent
+                ? <p style={{color:"#22c55e",fontSize:13,margin:0}}>Reset email sent to {user.email}</p>
+                : <button className="login-switch" type="button" onClick={handleReset} disabled={resetLoading}>
+                    {resetLoading ? "Sending…" : "Forgot your password? Send reset email"}
+                  </button>
+              }
             </div>
-            <div>
-              <div className="se-rir-lbl" style={{marginBottom:6,textAlign:"left"}}>New Password</div>
-              <input className="se-input" type="password" value={next}
-                onChange={e=>setNext(e.target.value)} autoComplete="new-password" required/>
-            </div>
-            <div>
-              <div className="se-rir-lbl" style={{marginBottom:6,textAlign:"left"}}>Confirm New Password</div>
-              <input className="se-input" type="password" value={confirm}
-                onChange={e=>setConfirm(e.target.value)} autoComplete="new-password" required/>
-            </div>
-            {error && <p className="login-error">{error}</p>}
-            <button className="btn btn-p" type="submit" disabled={loading} style={{marginTop:4}}>
-              {loading ? "…" : "Update Password"}
-            </button>
-          </form>
+          </>
         )}
       </div>
     </div>
