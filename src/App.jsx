@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { openDB } from "idb";
-import { onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, browserLocalPersistence, setPersistence, updatePassword, reauthenticateWithCredential, EmailAuthProvider } from "firebase/auth";
+import { onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, browserLocalPersistence, setPersistence, updatePassword, reauthenticateWithCredential, EmailAuthProvider, sendPasswordResetEmail } from "firebase/auth";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { auth, db } from "./firebase";
 import './App.css';
@@ -536,11 +536,13 @@ async function authWithPersistence(fn) {
 }
 
 function LoginScreen() {
-  const [email,    setEmail]    = useState("");
-  const [password, setPassword] = useState("");
-  const [isNew,    setIsNew]    = useState(false);
-  const [error,    setError]    = useState("");
-  const [loading,  setLoading]  = useState(false);
+  const [email,       setEmail]       = useState("");
+  const [password,    setPassword]    = useState("");
+  const [isNew,       setIsNew]       = useState(false);
+  const [error,       setError]       = useState("");
+  const [loading,     setLoading]     = useState(false);
+  const [resetSent,   setResetSent]   = useState(false);
+  const [resetLoading,setResetLoading]= useState(false);
 
   function handleError(err) {
     const code = err.code || "";
@@ -582,6 +584,19 @@ function LoginScreen() {
     setLoading(false);
   }
 
+  async function handleReset() {
+    if (!email) { setError("Enter your email address first."); return; }
+    setResetLoading(true);
+    setError("");
+    try {
+      await sendPasswordResetEmail(auth, email);
+      setResetSent(true);
+    } catch (err) {
+      handleError(err);
+    }
+    setResetLoading(false);
+  }
+
   return (
     <div className="login-wrap">
       <div className="login-logo">IRONTRACK</div>
@@ -589,10 +604,16 @@ function LoginScreen() {
         <input className="login-input" type="email"    placeholder="Email"    value={email}    onChange={e=>setEmail(e.target.value)}    required autoComplete="email" />
         <input className="login-input" type="password" placeholder="Password" value={password} onChange={e=>setPassword(e.target.value)} required autoComplete={isNew ? "new-password" : "current-password"} />
         {error && <p className="login-error">{error}</p>}
+        {resetSent && <p style={{color:"#22c55e",fontSize:13,textAlign:"center",margin:0}}>Reset email sent — check your inbox.</p>}
         <button className="btn btn-p login-btn" type="submit" disabled={loading}>
           {loading ? "…" : isNew ? "Create Account" : "Sign In"}
         </button>
-        <button className="login-switch" type="button" onClick={()=>{setIsNew(!isNew);setError("");}}>
+        {!isNew && (
+          <button className="login-switch" type="button" onClick={handleReset} disabled={resetLoading}>
+            {resetLoading ? "Sending…" : "Forgot password?"}
+          </button>
+        )}
+        <button className="login-switch" type="button" onClick={()=>{setIsNew(!isNew);setError("");setResetSent(false);}}>
           {isNew ? "Already have an account? Sign in" : "New here? Create an account"}
         </button>
       </form>
